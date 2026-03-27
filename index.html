@@ -613,17 +613,87 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--light);color:var(--
         <div class="form-group"><label>Hora inicio (display)</label><input type="text" id="evHiD" placeholder="Ej: 8:00 a.m." /></div>
         <div class="form-group"><label>Hora fin (display)</label><input type="text" id="evHfD" placeholder="Ej: 10:00 a.m." /></div>
       </div>
-      <div class="form-section-label">Fechas y horas exactas (para control de botones en la agenda)</div>
+      <div class="form-section-label">Horario del evento (hora de Bogot&#225;)</div>
       <div class="form-row-2">
         <div class="form-group">
-          <label>Inicio (UTC) *</label>
-          <input type="datetime-local" id="evHiUTC" />
-          <div class="form-hint">Bogot&#225; = UTC &minus; 5 &nbsp;|&nbsp; Ej: evento 8am BOG = 13:00 UTC</div>
+          <label>Hora de inicio *</label>
+          <select id="evHiUTC">
+            <option value="">Selecciona...</option>
+            <option value="06:00">6:00 a.m.</option>
+            <option value="06:30">6:30 a.m.</option>
+            <option value="07:00">7:00 a.m.</option>
+            <option value="07:30">7:30 a.m.</option>
+            <option value="08:00">8:00 a.m.</option>
+            <option value="08:30">8:30 a.m.</option>
+            <option value="09:00">9:00 a.m.</option>
+            <option value="09:30">9:30 a.m.</option>
+            <option value="10:00">10:00 a.m.</option>
+            <option value="10:30">10:30 a.m.</option>
+            <option value="11:00">11:00 a.m.</option>
+            <option value="11:30">11:30 a.m.</option>
+            <option value="12:00">12:00 p.m.</option>
+            <option value="12:30">12:30 p.m.</option>
+            <option value="13:00">1:00 p.m.</option>
+            <option value="13:30">1:30 p.m.</option>
+            <option value="14:00">2:00 p.m.</option>
+            <option value="14:30">2:30 p.m.</option>
+            <option value="15:00">3:00 p.m.</option>
+            <option value="15:30">3:30 p.m.</option>
+            <option value="16:00">4:00 p.m.</option>
+            <option value="16:30">4:30 p.m.</option>
+            <option value="17:00">5:00 p.m.</option>
+            <option value="17:30">5:30 p.m.</option>
+            <option value="18:00">6:00 p.m.</option>
+            <option value="18:30">6:30 p.m.</option>
+            <option value="19:00">7:00 p.m.</option>
+            <option value="19:30">7:30 p.m.</option>
+            <option value="20:00">8:00 p.m.</option>
+            <option value="20:30">8:30 p.m.</option>
+            <option value="21:00">9:00 p.m.</option>
+            <option value="21:30">9:30 p.m.</option>
+            <option value="22:00">10:00 p.m.</option>
+          </select>
+          <div class="form-hint">La asistencia abre 30 min antes de esta hora</div>
         </div>
         <div class="form-group">
-          <label>Fin (UTC) *</label>
-          <input type="datetime-local" id="evHfUTC" />
-          <div class="form-hint">La asistencia abre 30 min antes y cierra 60 min despu&#233;s</div>
+          <label>Hora de fin *</label>
+          <select id="evHfUTC">
+            <option value="">Selecciona...</option>
+            <option value="06:00">6:00 a.m.</option>
+            <option value="06:30">6:30 a.m.</option>
+            <option value="07:00">7:00 a.m.</option>
+            <option value="07:30">7:30 a.m.</option>
+            <option value="08:00">8:00 a.m.</option>
+            <option value="08:30">8:30 a.m.</option>
+            <option value="09:00">9:00 a.m.</option>
+            <option value="09:30">9:30 a.m.</option>
+            <option value="10:00">10:00 a.m.</option>
+            <option value="10:30">10:30 a.m.</option>
+            <option value="11:00">11:00 a.m.</option>
+            <option value="11:30">11:30 a.m.</option>
+            <option value="12:00">12:00 p.m.</option>
+            <option value="12:30">12:30 p.m.</option>
+            <option value="13:00">1:00 p.m.</option>
+            <option value="13:30">1:30 p.m.</option>
+            <option value="14:00">2:00 p.m.</option>
+            <option value="14:30">2:30 p.m.</option>
+            <option value="15:00">3:00 p.m.</option>
+            <option value="15:30">3:30 p.m.</option>
+            <option value="16:00">4:00 p.m.</option>
+            <option value="16:30">4:30 p.m.</option>
+            <option value="17:00">5:00 p.m.</option>
+            <option value="17:30">5:30 p.m.</option>
+            <option value="18:00">6:00 p.m.</option>
+            <option value="18:30">6:30 p.m.</option>
+            <option value="19:00">7:00 p.m.</option>
+            <option value="19:30">7:30 p.m.</option>
+            <option value="20:00">8:00 p.m.</option>
+            <option value="20:30">8:30 p.m.</option>
+            <option value="21:00">9:00 p.m.</option>
+            <option value="21:30">9:30 p.m.</option>
+            <option value="22:00">10:00 p.m.</option>
+          </select>
+          <div class="form-hint">La asistencia cierra 60 min despu&#233;s de esta hora</div>
         </div>
       </div>
       <div class="form-group"><label>Lugar *</label><input type="text" id="evLugar" placeholder="Ej: Auditorio Fundadores" /></div>
@@ -1421,11 +1491,13 @@ function openEvModal(id) {
   setVal('evHiD',         ev.hora_inicio_display||'');
   setVal('evHfD',         ev.hora_fin_display||'');
   function utcToBoHHMM(isoStr) {
+    // Converts UTC ISO string to Bogotá "HH:MM" matching <select> option values
     if (!isoStr) return '';
-    var d = new Date(isoStr);
-    var h = d.getUTCHours() - 5;
+    var d  = new Date(isoStr);
+    var h  = d.getUTCHours() - 5;   // UTC to Bogotá (UTC-5)
     if (h < 0) h += 24;
     var mm = d.getUTCMinutes();
+    // Zero-pad to match option values like "08:00", "13:30"
     return (h < 10 ? '0' : '') + h + ':' + (mm < 10 ? '0' : '') + mm;
   }
   setVal('evHiUTC', utcToBoHHMM(ev.fecha_inicio));
@@ -1454,20 +1526,28 @@ function getVal(id) {
 }
 
 function bogToUTC(dia, hhmm) {
+  // hhmm comes from <select> value, e.g. "08:00", "13:30"
   if (!hhmm) return null;
   var dateMap = { d1:'2026-04-14', d2:'2026-04-15', d3:'2026-04-16' };
   var date = dateMap[dia] || '2026-04-14';
   var parts = hhmm.split(':');
-  var hh = parseInt(parts[0], 10) + 5;
-  var mm = parseInt(parts[1], 10);
-  var d  = new Date(date + 'T00:00:00Z');
-  d.setUTCHours(hh, mm, 0, 0);
-  return d.toISOString();
+  var bogH  = parseInt(parts[0], 10);
+  var bogM  = parseInt(parts[1], 10);
+  if (isNaN(bogH) || isNaN(bogM)) return null;
+  var utcH  = bogH + 5;   // Bogotá = UTC-5, so add 5 to get UTC
+  var d = new Date(date + 'T00:00:00Z');
+  d.setUTCHours(utcH, bogM, 0, 0);
+  return d.toISOString();   // e.g. "2026-04-15T13:00:00.000Z"
 }
 
 function saveEvento() {
   var titulo = getVal('evTitulo').trim();
   if (!titulo) { alert('El t\u00edtulo es obligatorio.'); return; }
+  // Build data object — only include fecha_inicio/fecha_fin if the
+  // selects have a value, to avoid overwriting existing timestamps with null
+  var hiUTC = bogToUTC(getVal('evDia'), getVal('evHiUTC'));
+  var hfUTC = bogToUTC(getVal('evDia'), getVal('evHfUTC'));
+
   var data = {
     titulo:              titulo,
     descripcion:         getVal('evDesc').trim(),
@@ -1475,14 +1555,17 @@ function saveEvento() {
     tipo:                getVal('evTipo'),
     hora_inicio_display: getVal('evHiD').trim(),
     hora_fin_display:    getVal('evHfD').trim(),
-    fecha_inicio:        bogToUTC(getVal('evDia'), getVal('evHiUTC')),
-    fecha_fin:           bogToUTC(getVal('evDia'), getVal('evHfUTC')),
     lugar:               getVal('evLugar').trim(),
     facultad:            getVal('evFacultad').trim(),
     invitados:           getVal('evInvitados').trim(),
     estado:              getVal('evEstado'),
     nota_estado:         getVal('evNota').trim()
   };
+
+  // Only update timestamps if the selects have a valid selection
+  // This prevents overwriting existing timestamps when only editing place/title/etc.
+  if (hiUTC) data.fecha_inicio = hiUTC;
+  if (hfUTC) data.fecha_fin    = hfUTC;
   if (editingEvId) {
     eventos = eventos.map(function(e){ return e.id===editingEvId ? Object.assign({},e,data) : e; });
     db.from('eventos').update(data).eq('id', editingEvId).then(function(r) {

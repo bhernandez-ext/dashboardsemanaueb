@@ -1583,7 +1583,7 @@ function renderEventos() {
       h += '<button class="btn-sm btn-ok" onclick="changeState(\'' + ev.id + '\',\'confirmado\')">Reactivar</button>';
     }
     h += '<button class="btn-sm btn-csv" onclick="exportEventCSV(\'' + ev.id + '\')">CSV</button>';
-    h += '<button class="btn-sm btn-danger" onclick="deleteEvento(\'' + ev.id + '\',ev.titulo)">&times; Eliminar</button>';
+    h += '<button class="btn-sm btn-danger" onclick="deleteEvento(\'' + ev.id + '\',\'' + ev.titulo.substring(0,30) + '\')">&times; Eliminar</button>';
     h += '</div></td>';
     h += '</tr>';
   });

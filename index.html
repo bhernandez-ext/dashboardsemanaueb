@@ -1394,8 +1394,18 @@ function changeState(id, newState) {
   if (!confirm('\u00bfSeguro que deseas '+labels[newState]+' el evento "'+ev.titulo+'"?')) return;
   ev.estado = newState;
   renderEventos();
-  db.from('eventos').update({ estado: newState }).eq('id', id).then(function(r) {
-    if (r.error) showToast('Error al cambiar estado: ' + r.error.message);
+  db.from('eventos').update({ estado: newState, updated_at: new Date().toISOString() }).eq('id', id).then(function(r) {
+    if (r.error) {
+      console.error('Supabase changeState error:', r.error);
+      showToast('Error al cambiar estado: ' + r.error.message);
+      // Revert local change
+      var ev2 = eventos.filter(function(e){ return e.id===id; })[0];
+      if (ev2) ev2.estado = ev2.estado === newState ? 'confirmado' : newState;
+      renderEventos();
+    } else {
+      console.log('Estado cambiado en Supabase:', id, newState);
+      showToast('Estado actualizado.');
+    }
   });
 }
 
@@ -1476,12 +1486,31 @@ function saveEvento() {
   if (editingEvId) {
     eventos = eventos.map(function(e){ return e.id===editingEvId ? Object.assign({},e,data) : e; });
     db.from('eventos').update(data).eq('id', editingEvId).then(function(r) {
-      if (r.error) showToast('Error al guardar: ' + r.error.message);
+      if (r.error) {
+        console.error('Supabase update error:', r.error);
+        showToast('Error al guardar en Supabase: ' + r.error.message);
+      } else {
+        console.log('Evento actualizado en Supabase:', editingEvId, data);
+        showToast('Evento guardado correctamente.');
+        // Force reload events to confirm
+        db.from('eventos').select('*').eq('activo', true).order('dia').order('orden').then(function(res) {
+          if (!res.error) { eventos = res.data || []; renderEventos(); }
+        });
+      }
     });
   } else {
     data.id = 'ev_'+Date.now(); data.orden = eventos.length+1; eventos.push(data);
     db.from('eventos').insert(data).then(function(r) {
-      if (r.error) showToast('Error al crear evento: ' + r.error.message);
+      if (r.error) {
+        console.error('Supabase insert error:', r.error);
+        showToast('Error al crear evento: ' + r.error.message);
+      } else {
+        console.log('Evento creado en Supabase:', data.id);
+        showToast('Evento creado correctamente.');
+        db.from('eventos').select('*').eq('activo', true).order('dia').order('orden').then(function(res) {
+          if (!res.error) { eventos = res.data || []; renderEventos(); }
+        });
+      }
     });
   }
   closeEvModal();

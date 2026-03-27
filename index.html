@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitor · Semana Internacional de T&#252;rkiye · UEB 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root{
+  --dark:#1a1540;--mid:#2b2564;--gold:#c9a84c;--goldf:#e0b84a;
+  --rose:#b05572;--teal:#008776;--acacia:#81BB26;--heli:#F08013;--roble:#404827;
+  --cream:#f5e6d3;--light:#fdf8f3;--card:#ffffff;
+  --border:rgba(26,21,64,.1);--sh:0 2px 14px rgba(26,21,64,.07);--sh-h:0 6px 22px rgba(26,21,64,.13);
+  --dim:#7a7a9a;--r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Source Sans 3',sans-serif;background:var(--light);color:var(--dark);min-height:100vh}
+
+/* SIDEBAR */
+.layout{display:flex;min-height:100vh}
+.sidebar{width:220px;background:var(--dark);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sb-logo{padding:1.5rem 1.3rem 1.3rem;border-bottom:1px solid rgba(255,255,255,.07)}
+.sb-pill{font-size:.57rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.3rem;opacity:.8}
+.sb-title{font-family:'Playfair Display',serif;font-size:.9rem;color:var(--cream);line-height:1.4}
+.sb-sub{font-size:.64rem;color:rgba(245,230,211,.4);margin-top:.12rem}
+.nav{padding:.9rem .65rem;flex:1}
+.nav-group{font-size:.56rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(245,230,211,.3);padding:.5rem .6rem .22rem}
+.nav-item{display:flex;align-items:center;gap:.55rem;padding:.52rem .82rem;border-radius:8px;cursor:pointer;transition:background .15s,color .15s;font-size:.8rem;font-weight:600;color:rgba(245,230,211,.48);border:none;background:none;width:100%;text-align:left;margin-bottom:.08rem}
+.nav-item svg{flex-shrink:0;opacity:.5}
+.nav-item:hover{background:rgba(255,255,255,.06);color:var(--cream)}
+.nav-item.active{background:rgba(201,168,76,.15);color:var(--gold)}
+.nav-item.active svg{opacity:1}
+.sb-footer{padding:.9rem 1.2rem;border-top:1px solid rgba(255,255,255,.07);font-size:.66rem;color:rgba(245,230,211,.32);display:flex;align-items:center;gap:.45rem}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#aaa;flex-shrink:0}
+.live-dot.on{background:#4caf82;box-shadow:0 0 6px #4caf82;animation:dp 2s infinite}
+@keyframes dp{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* MAIN */
+.main{margin-left:220px;flex:1;padding:1.8rem 2rem;max-width:calc(100vw - 220px)}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.6rem;flex-wrap:wrap;gap:.8rem}
+.topbar h1{font-family:'Playfair Display',serif;font-size:1.45rem;color:var(--dark)}
+.topbar-right{display:flex;align-items:center;gap:.65rem}
+.demo-chip{font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.28rem .75rem;border-radius:20px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);color:#8a6a1a}
+.btn-export{background:var(--dark);color:var(--cream);border:none;border-radius:8px;padding:.42rem 1rem;font-family:'Source Sans 3',sans-serif;font-size:.74rem;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:background .15s;display:flex;align-items:center;gap:.38rem}
+.btn-export:hover{background:var(--mid)}
+
+/* TAB PANELS */
+.tab-panel{display:none}
+.tab-panel.active{display:block;animation:fadeUp .22s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* SECTION HEADER */
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem}
+.sec-title{font-family:'Playfair Display',serif;font-size:1.08rem;color:var(--dark)}
+
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem;margin-bottom:1.6rem}
+.kpi-card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:1.1rem 1.2rem;border-top:3px solid var(--gold)}
+.kpi-card.k-teal  {border-top-color:var(--teal)}
+.kpi-card.k-rose  {border-top-color:var(--rose)}
+.kpi-card.k-acacia{border-top-color:var(--acacia)}
+.kpi-card.k-heli  {border-top-color:var(--heli)}
+.kpi-card.k-roble {border-top-color:var(--roble)}
+.kpi-label{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--dim);margin-bottom:.28rem}
+.kpi-value{font-size:1.95rem;font-weight:700;color:var(--dark);line-height:1;font-family:'Playfair Display',serif}
+.kpi-sub{font-size:.68rem;color:var(--dim);margin-top:.22rem}
+
+/* CHARTS */
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.6rem}
+.chart-card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:1.2rem}
+.chart-card.wide{grid-column:span 2}
+.chart-title{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:.9rem}
+.chart-wrap{position:relative;height:190px}
+.chart-wrap.tall{height:250px}
+.chart-wrap.xtall{height:300px}
+
+/* TABLES */
+.table-wrap{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;margin-bottom:1.6rem}
+.data-table{width:100%;border-collapse:collapse;font-size:.77rem}
+.data-table th{text-align:left;padding:.58rem .82rem;font-size:.61rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);border-bottom:1px solid var(--border);background:#fafaf8;white-space:nowrap}
+.data-table td{padding:.6rem .82rem;border-bottom:1px solid rgba(26,21,64,.05);color:#2a2a3a;vertical-align:middle}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:#fdf8f3}
+.data-table .row-past td{color:#aaa}
+.data-table .mono{font-family:monospace;font-size:.73rem}
+.data-table .small{font-size:.73rem}
+.data-table .center{text-align:center}
+.data-table .ev-cell{max-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stars-cell{white-space:nowrap}
+.inline-stars{color:var(--gold);font-size:.85rem}
+
+/* CHIPS */
+.chip-tipo{font-size:.63rem;font-weight:700;padding:.16rem .48rem;border-radius:20px;text-transform:uppercase;letter-spacing:.05em;background:rgba(201,168,76,.1);color:#7a5620;white-space:nowrap}
+.chip-ev{font-size:.63rem;font-weight:700;padding:.16rem .48rem;border-radius:20px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.chip-conf  {background:rgba(0,135,118,.1);color:var(--teal)}
+.chip-aplaz {background:rgba(240,128,19,.1);color:var(--heli)}
+.chip-cancel{background:rgba(176,85,114,.1);color:var(--rose)}
+.chip-past  {background:rgba(26,21,64,.08);color:#888}
+.chip-state{font-size:.63rem;font-weight:700;padding:.16rem .48rem;border-radius:20px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.chip-asistio{background:rgba(0,135,118,.1);color:var(--teal)}
+.chip-ausente{background:rgba(176,85,114,.08);color:var(--rose)}
+
+/* FILTER ROW */
+.filter-row{display:flex;gap:.55rem;flex-wrap:wrap;align-items:center;padding:.9rem 1rem .75rem;border-bottom:1px solid var(--border)}
+.filter-row select,.filter-row input{background:#fafaf8;border:1.5px solid var(--border);border-radius:8px;padding:.36rem .72rem;font-family:'Source Sans 3',sans-serif;font-size:.77rem;color:var(--dark);outline:none;cursor:pointer;transition:border-color .15s}
+.filter-row select:focus,.filter-row input:focus{border-color:var(--gold)}
+.filter-row input{min-width:180px}
+.filter-row input::placeholder{color:#bbb}
+.count-note{font-size:.7rem;color:var(--dim);margin-left:auto;white-space:nowrap}
+.filter-row .btn-sm-export{background:none;border:1.5px solid var(--border);border-radius:8px;padding:.36rem .8rem;font-size:.7rem;font-weight:700;color:var(--dim);cursor:pointer;transition:all .14s;white-space:nowrap}
+.filter-row .btn-sm-export:hover{border-color:var(--gold);color:var(--dark)}
+
+/* PAGINATION */
+.pagination{display:flex;align-items:center;gap:.5rem;padding:.7rem 1rem;border-top:1px solid var(--border);font-size:.75rem;color:var(--dim)}
+.pagination button{background:none;border:1.5px solid var(--border);border-radius:6px;padding:.25rem .65rem;font-size:.72rem;font-weight:700;color:var(--dim);cursor:pointer;transition:all .14s}
+.pagination button:hover:not(:disabled){border-color:var(--gold);color:var(--dark)}
+.pagination button:disabled{opacity:.35;cursor:not-allowed}
+.pagination .page-info{margin:0 .5rem}
+
+/* EVAL SECTION */
+.eval-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.6rem}
+.eval-card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:1.2rem}
+.eval-card-title{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:.9rem}
+.big-score{display:flex;align-items:baseline;gap:.5rem;margin-bottom:.75rem}
+.big-score .score{font-family:'Playfair Display',serif;font-size:2.7rem;color:var(--dark);font-weight:700;line-height:1}
+.big-score .stars-lg{color:var(--gold);font-size:1.1rem}
+.big-score .of{font-size:.74rem;color:var(--dim);align-self:flex-end;padding-bottom:.3rem}
+.bar-row{display:flex;align-items:center;gap:.65rem;margin-bottom:.45rem}
+.bar-label{font-size:.7rem;color:var(--dim);width:34px;text-align:right;flex-shrink:0}
+.bar-track{flex:1;background:rgba(26,21,64,.07);border-radius:20px;height:7px;overflow:hidden}
+.bar-fill{height:100%;border-radius:20px;background:var(--gold);transition:width .5s}
+.bar-pct{font-size:.68rem;color:var(--dim);width:32px;text-align:right;flex-shrink:0}
+.metric-row{display:flex;align-items:center;justify-content:space-between;padding:.52rem 0;border-bottom:1px solid var(--border)}
+.metric-row:last-child{border-bottom:none}
+.metric-label{font-size:.78rem;color:var(--dim)}
+.metric-value{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--dark);font-weight:700}
+.metric-row.highlight{background:rgba(201,168,76,.05);margin:0 -.5rem;padding:.52rem .5rem;border-radius:6px}
+
+/* PAÍSES */
+.pais-row{display:flex;align-items:center;gap:.65rem;margin-bottom:.5rem}
+.pais-rank{font-size:.66rem;font-weight:700;color:var(--gold);width:16px;text-align:center;flex-shrink:0}
+.pais-name{font-size:.8rem;color:var(--dark);flex:0 0 130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pais-count{font-size:.7rem;color:var(--dim);width:22px;text-align:right;flex-shrink:0}
+
+/* TOP PROGRAMAS */
+.prog-chip{display:flex;align-items:center;gap:.55rem;padding:.45rem .65rem;background:#fafaf8;border-radius:8px;margin-bottom:.4rem;border:1px solid var(--border)}
+.prog-rank{font-size:.63rem;font-weight:700;color:var(--gold);width:14px;text-align:center;flex-shrink:0}
+.prog-name{font-size:.8rem;color:var(--dark);flex:1}
+.prog-count{font-size:.7rem;font-weight:700;color:var(--teal)}
+
+/* CRESER CARD */
+.creser-center{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%}
+.creser-pct-label{font-size:.8rem;color:var(--dim);margin-top:.7rem;text-align:center}
+
+/* COMMENTS */
+.comment-list{display:flex;flex-direction:column;gap:.65rem;max-height:280px;overflow-y:auto;padding-right:.2rem}
+.comment-item{background:#fafaf8;border-radius:8px;padding:.8rem .95rem;border-left:3px solid var(--border)}
+.comment-item:first-child{border-left-color:var(--teal)}
+.comment-meta{font-size:.62rem;color:var(--dim);margin-bottom:.28rem;display:flex;gap:.55rem;flex-wrap:wrap}
+.cm-ev{color:var(--dark);font-weight:700}
+.comment-text{font-size:.79rem;color:#444;line-height:1.55;font-style:italic}
+.empty-note{font-size:.8rem;color:#bbb;font-style:italic;padding:.4rem 0}
+
+/* ACTION BUTTONS */
+.action-btns{display:flex;gap:.35rem;flex-wrap:wrap}
+.btn-sm{background:none;border:1px solid var(--border);border-radius:6px;padding:.26rem .55rem;font-size:.68rem;font-weight:700;color:var(--dim);cursor:pointer;transition:all .13s;white-space:nowrap}
+.btn-sm:hover{border-color:var(--gold);color:var(--dark)}
+.btn-warn:hover{border-color:var(--heli);color:var(--heli)}
+.btn-danger:hover{border-color:var(--rose);color:var(--rose)}
+.btn-ok:hover{border-color:var(--teal);color:var(--teal)}
+.btn-csv{background:rgba(201,168,76,.08);border-color:rgba(201,168,76,.3);color:#8a6a1a}
+.btn-csv:hover{background:rgba(201,168,76,.18);border-color:var(--gold);color:#5a4210}
+.chip-upcoming{background:rgba(91,138,240,.12);color:#3a60c0}
+.chip-live    {background:rgba(209,48,37,.12);color:#c0392b;font-weight:700}
+.chip-grace   {background:rgba(240,128,19,.12);color:var(--heli)}
+.chip-nodate  {background:rgba(26,21,64,.07);color:#bbb}
+@keyframes pulseLive{0%,100%{opacity:1}50%{opacity:.65}}
+.chip-live{animation:pulseLive 1.8s infinite}
+.ev-count-reg {color:var(--dark);font-weight:700}
+.ev-count-asis{color:var(--teal);font-weight:700}
+.ev-count-aus {color:var(--rose);font-weight:700}
+.ev-count-dim {color:#ccc}
+.live-pulse   {color:#c0392b;font-size:.62rem;animation:pulseLive 1.5s infinite}
+.row-live td  {background:rgba(209,48,37,.025)}
+.data-table .row-past td{color:#aaa}
+.btn-add{background:var(--dark);color:var(--cream);border:none;border-radius:8px;padding:.4rem .92rem;font-family:'Source Sans 3',sans-serif;font-size:.74rem;font-weight:700;cursor:pointer;transition:background .15s;letter-spacing:.04em}
+.btn-add:hover{background:var(--mid)}
+
+/* TOAST */
+#toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--dark);color:var(--cream);padding:.7rem 1.2rem;border-radius:8px;font-size:.8rem;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s;z-index:500;border-left:3px solid var(--gold)}
+#toast.show{opacity:1}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(10,8,40,.45);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:200;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity .22s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal-panel{background:var(--card);border-radius:14px;max-width:580px;width:100%;box-shadow:0 20px 60px rgba(10,8,40,.18);transform:translateY(14px) scale(.97);transition:transform .22s;max-height:92vh;overflow-y:auto}
+.modal-overlay.open .modal-panel{transform:translateY(0) scale(1)}
+.modal-head{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--card);z-index:2}
+.modal-head h3{font-family:'Playfair Display',serif;font-size:1rem;color:var(--dark)}
+.modal-close-btn{background:none;border:none;color:var(--dim);cursor:pointer;font-size:1.05rem;transition:color .14s}
+.modal-close-btn:hover{color:var(--dark)}
+.modal-body{padding:1.3rem 1.5rem}
+.form-group{margin-bottom:.85rem}
+.form-group label{display:block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:.3rem}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:.58rem .85rem;border:1.5px solid var(--border);border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:.87rem;color:var(--dark);background:#fafaf8;outline:none;transition:border-color .15s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--gold);background:#fff}
+.form-group textarea{min-height:65px;resize:vertical}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+.form-section-label{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin:1rem 0 .6rem;padding-top:.85rem;border-top:1px solid var(--border)}
+.form-hint{font-size:.68rem;color:var(--dim);margin-top:.28rem}
+.btn-save{width:100%;padding:.76rem;background:var(--dark);color:var(--cream);border:none;border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:.87rem;font-weight:700;cursor:pointer;margin-top:.5rem;letter-spacing:.05em;transition:background .15s}
+.btn-save:hover{background:var(--mid)}
+
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(26,21,64,.1);border-radius:4px}
+
+/* ── LOGIN SCREEN ── */
+#loginScreen{
+  position:fixed;inset:0;background:var(--dark);
+  display:flex;align-items:center;justify-content:center;
+  z-index:9999;padding:1.5rem;
+}
+.login-box{
+  background:var(--card);border-radius:16px;
+  padding:2.5rem 2rem;max-width:360px;width:100%;
+  box-shadow:0 24px 64px rgba(0,0,0,.4);
+  text-align:center;
+}
+.login-logo{
+  font-family:'Playfair Display',serif;font-size:1.1rem;
+  color:var(--dark);line-height:1.4;margin-bottom:1.6rem;
+}
+.login-logo span{display:block;font-size:.65rem;font-weight:700;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--gold);
+  margin-bottom:.4rem;opacity:.8}
+.login-field{margin-bottom:.9rem;text-align:left}
+.login-field label{display:block;font-size:.68rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:.3rem}
+.login-field input{
+  width:100%;padding:.65rem .9rem;border:1.5px solid var(--border);
+  border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:.9rem;
+  color:var(--dark);background:#fafaf8;outline:none;transition:border-color .15s;
+}
+.login-field input:focus{border-color:var(--gold);background:#fff}
+.login-err{font-size:.78rem;color:var(--rose);margin-bottom:.8rem;min-height:1.1rem}
+.btn-login{
+  width:100%;padding:.8rem;background:var(--dark);color:var(--cream);
+  border:none;border-radius:8px;font-family:'Source Sans 3',sans-serif;
+  font-size:.88rem;font-weight:700;cursor:pointer;letter-spacing:.05em;
+  transition:background .18s;
+}
+.btn-login:hover{background:var(--mid)}
+.login-lock{font-size:1.8rem;margin-bottom:1rem;opacity:.35}
+
+@media(max-width:960px){
+  .charts-grid{grid-template-columns:1fr}
+  .chart-card.wide{grid-column:span 1}
+  .eval-grid{grid-template-columns:1fr}
+}
+@media(max-width:700px){
+  .sidebar{width:180px}
+  .main{margin-left:180px;padding:1.1rem;max-width:calc(100vw - 180px)}
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .form-row-2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<!-- ── LOGIN SCREEN ── -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-lock">&#128274;</div>
+    <div class="login-logo">
+      <span>Monitor de seguimiento</span>
+      Semana Internacional de T&#252;rkiye<br>UEB 2026-1
+    </div>
+    <div class="login-field">
+      <label>Usuario</label>
+      <input type="text" id="loginUser" placeholder="Usuario" autocomplete="username"
+        onkeydown="if(event.key==='Enter') doLogin()" />
+    </div>
+    <div class="login-field">
+      <label>Contrase&#241;a</label>
+      <input type="password" id="loginPass" placeholder="Contrase&#241;a" autocomplete="current-password"
+        onkeydown="if(event.key==='Enter') doLogin()" />
+    </div>
+    <div class="login-err" id="loginErr"></div>
+    <button class="btn-login" onclick="doLogin()">Ingresar</button>
+  </div>
+</div>
+
+<div class="layout" id="appLayout" style="display:none">
+
+<!-- SIDEBAR -->
+<!-- Global loading/error indicators -->
+<div id="globalLoader" style="display:none;position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--teal));z-index:500;animation:loadbar 1.2s infinite"></div>
+<div id="globalErr"    style="display:none;position:fixed;top:0;left:0;right:0;background:#fde8ee;color:var(--rose);text-align:center;padding:.55rem;font-size:.8rem;z-index:499"></div>
+<style>@keyframes loadbar{0%{opacity:1}50%{opacity:.4}100%{opacity:1}}</style>
+
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-pill">Monitor de seguimiento</div>
+    <div class="sb-title">Semana Internacional<br>de T&#252;rkiye</div>
+    <div class="sb-sub">UEB 2026-1 &nbsp;&#183;&nbsp; 14&ndash;16 abril</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-group">An&#225;lisis</div>
+    <button class="nav-item active" onclick="showTab('resumen')">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+      Resumen
+    </button>
+    <button class="nav-item" onclick="showTab('asistentes')">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4h12M2 8h12M2 12h8"/></svg>
+      Asistentes
+    </button>
+    <button class="nav-item" onclick="showTab('evaluacion')">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 1l2 5h5l-4 3 2 5-5-3-5 3 2-5L1 6h5z"/></svg>
+      Evaluaci&#243;n
+    </button>
+    <div class="nav-group" style="margin-top:.7rem">Gesti&#243;n</div>
+    <button class="nav-item" onclick="showTab('eventos')">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="2" width="14" height="13" rx="1"/><line x1="5" y1="1" x2="5" y2="4"/><line x1="11" y1="1" x2="11" y2="4"/><line x1="1" y1="6" x2="15" y2="6"/></svg>
+      Eventos
+    </button>
+  </nav>
+  <div class="sb-footer">
+    <span class="live-dot on"></span>
+    <span>Modo demo activo</span>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <h1>Panel de seguimiento</h1>
+    <div class="topbar-right">
+      <span class="demo-chip">Datos demo</span>
+      <button class="btn-export" onclick="exportCSV()">
+        <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 1v10M4 7l4 4 4-4"/><path d="M2 13h12"/></svg>
+        Exportar CSV completo
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ RESUMEN ══ -->
+  <div class="tab-panel active" id="tab-resumen">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Total asistencias</div>
+        <div class="kpi-value" id="kpi-asistencias">—</div>
+        <div class="kpi-sub">registros en todos los eventos</div>
+      </div>
+      <div class="kpi-card k-teal">
+        <div class="kpi-label">Personas distintas</div>
+        <div class="kpi-value" id="kpi-personas">—</div>
+        <div class="kpi-sub">por n&#250;mero de documento</div>
+      </div>
+      <div class="kpi-card k-acacia">
+        <div class="kpi-label">Multi-evento</div>
+        <div class="kpi-value" id="kpi-multi">—</div>
+        <div class="kpi-sub">asistieron a m&#225;s de 1 evento</div>
+      </div>
+      <div class="kpi-card k-heli">
+        <div class="kpi-label">Calificaci&#243;n prom.</div>
+        <div class="kpi-value" id="kpi-cal">—</div>
+        <div class="kpi-sub">&#9733; sobre 5 puntos</div>
+      </div>
+      <div class="kpi-card k-rose">
+        <div class="kpi-label">Competencias globales</div>
+        <div class="kpi-value" id="kpi-comp">—</div>
+        <div class="kpi-sub">promedio sobre 5</div>
+      </div>
+      <div class="kpi-card k-roble">
+        <div class="kpi-label">Participaci&#243;n CreSer</div>
+        <div class="kpi-value" id="kpi-creser" style="font-size:1.2rem;margin-top:.3rem">—</div>
+        <div class="kpi-sub">&nbsp;</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Eventos programados</div>
+        <div class="kpi-value" id="kpi-eventos">—</div>
+        <div class="kpi-sub">en agenda oficial</div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card wide">
+        <div class="chart-title">Asistentes por evento</div>
+        <div class="chart-wrap tall"><canvas id="chartEvento"></canvas></div>
+      </div>
+    </div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">Asistencias por d&#237;a</div>
+        <div class="chart-wrap"><canvas id="chartDia"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Tipo de participante</div>
+        <div class="chart-wrap"><canvas id="chartTipo"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Top unidades acad&#233;micas</div>
+        <div class="chart-wrap tall"><canvas id="chartFacultad"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Canal de difusi&#243;n</div>
+        <div class="chart-wrap tall"><canvas id="chartCanal"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ASISTENTES ══ -->
+  <div class="tab-panel" id="tab-asistentes">
+    <div class="table-wrap">
+      <div class="filter-row">
+        <select id="filterEvento"   onchange="asisPage=1;renderAsistentes()"><option value="todos">Todos los eventos</option></select>
+        <select id="filterDia"      onchange="asisPage=1;renderAsistentes()">
+          <option value="todos">Todos los d&#237;as</option>
+          <option value="d1">Martes 14</option>
+          <option value="d2">Mi&#233;rcoles 15</option>
+          <option value="d3">Jueves 16</option>
+        </select>
+        <select id="filterTipo"     onchange="asisPage=1;renderAsistentes()">
+          <option value="todos">Todos los tipos</option>
+          <option>Estudiante</option><option>Docente</option>
+          <option>Administrativo</option><option>P&#250;blico externo</option>
+        </select>
+        <select id="filterFacultad" onchange="asisPage=1;renderAsistentes()"><option value="todos">Todas las unidades</option></select>
+        <select id="filterCreser"   onchange="asisPage=1;renderAsistentes()">
+          <option value="todos">CreSer: todos</option>
+          <option value="S&#237;">CreSer: S&#237;</option>
+          <option value="No">CreSer: No</option>
+        </select>
+        <select id="filterEstado"   onchange="asisPage=1;renderAsistentes()">
+          <option value="todos">Asisti&#243; y no asisti&#243;</option>
+          <option value="asistio">Solo asisti&#243;</option>
+          <option value="ausente">Solo inscritos ausentes</option>
+        </select>
+        <input type="text" id="searchAsis" placeholder="Nombre o documento..." oninput="asisPage=1;renderAsistentes()" />
+        <button class="btn-sm-export" onclick="exportCurrentFilterCSV()">&#11015; CSV filtrado</button>
+        <span class="count-note" id="countAsis"></span>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Estado</th><th>Nombre</th><th>Documento</th><th>D&#237;a</th>
+              <th>Evento</th><th>Tipo</th><th>Unidad acad&#233;mica</th>
+              <th>Programa</th><th>CreSer</th><th>Cal. &#9733;</th><th>Comp. glob.</th><th>Registro</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyAsis"></tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <button id="asisPrev" onclick="asisChangePage(-1)">&#8592; Anterior</button>
+        <span class="page-info" id="asisPageInfo"></span>
+        <button id="asisNext" onclick="asisChangePage(1)">Siguiente &#8594;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ EVALUACIÓN ══ -->
+  <div class="tab-panel" id="tab-evaluacion">
+    <div class="filter-row" style="margin-bottom:1.2rem;border-radius:var(--r);background:var(--card);box-shadow:var(--sh)">
+      <label style="font-size:.7rem;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.08em">Filtrar por evento</label>
+      <select id="filterEvalEvento" onchange="filterEval()"><option value="todos">Todos los eventos</option></select>
+    </div>
+
+    <div class="eval-grid">
+      <div class="eval-card">
+        <div class="eval-card-title">Calificaci&#243;n general (<span id="evalTotal">0</span> evaluaciones)</div>
+        <div class="big-score">
+          <span class="score" id="evalAvgCal">—</span>
+          <div><div class="stars-lg" id="evalStars"></div></div>
+        </div>
+        <div class="bar-row"><span class="bar-label">5&#9733;</span><div class="bar-track"><div class="bar-fill" id="bar-star-5"></div></div><span class="bar-pct" id="pct-star-5">0%</span></div>
+        <div class="bar-row"><span class="bar-label">4&#9733;</span><div class="bar-track"><div class="bar-fill" id="bar-star-4"></div></div><span class="bar-pct" id="pct-star-4">0%</span></div>
+        <div class="bar-row"><span class="bar-label">3&#9733;</span><div class="bar-track"><div class="bar-fill" id="bar-star-3"></div></div><span class="bar-pct" id="pct-star-3">0%</span></div>
+        <div class="bar-row"><span class="bar-label">2&#9733;</span><div class="bar-track"><div class="bar-fill" id="bar-star-2"></div></div><span class="bar-pct" id="pct-star-2">0%</span></div>
+        <div class="bar-row"><span class="bar-label">1&#9733;</span><div class="bar-track"><div class="bar-fill" id="bar-star-1"></div></div><span class="bar-pct" id="pct-star-1">0%</span></div>
+      </div>
+      <div class="eval-card">
+        <div class="eval-card-title">Promedios por aspecto</div>
+        <div class="metric-row"><span class="metric-label">Contenido y ponentes</span><span class="metric-value" id="evalAvgCont">—</span></div>
+        <div class="metric-row"><span class="metric-label">Organizaci&#243;n y log&#237;stica</span><span class="metric-value" id="evalAvgLog">—</span></div>
+        <div class="metric-row highlight" style="margin-top:.5rem">
+          <span class="metric-label" style="color:var(--dark);font-weight:600">&#127775; Competencias globales</span>
+          <span class="metric-value" style="color:var(--teal)" id="evalAvgComp">—</span>
+        </div>
+      </div>
+      <div class="eval-card">
+        <div class="eval-card-title">Canal de difusi&#243;n</div>
+        <div class="chart-wrap"><canvas id="chartCanalEval"></canvas></div>
+      </div>
+      <div class="eval-card">
+        <div class="eval-card-title">Pa&#237;ses sugeridos para pr&#243;ximas ediciones</div>
+        <div id="paisesList"></div>
+      </div>
+    </div>
+
+    <!-- Tipo por evento -->
+    <div class="charts-grid" style="margin-bottom:1.6rem">
+      <div class="chart-card wide">
+        <div class="chart-title">Tipo de participante por evento (apilado)</div>
+        <div class="chart-wrap tall"><canvas id="chartTipoEvento"></canvas></div>
+      </div>
+    </div>
+
+    <!-- CreSer + programas -->
+    <div class="eval-grid" style="margin-bottom:1.6rem">
+      <div class="eval-card">
+        <div class="eval-card-title">Participaci&#243;n CreSer</div>
+        <div class="chart-wrap" style="height:150px"><canvas id="chartCreser"></canvas></div>
+        <p class="creser-pct-label" id="creserPctLabel"></p>
+      </div>
+      <div class="eval-card">
+        <div class="eval-card-title">Top 5 programas acad&#233;micos</div>
+        <div id="topProgList"></div>
+      </div>
+    </div>
+
+    <!-- Distribución de programas -->
+    <div class="chart-card" style="margin-bottom:1.6rem">
+      <div class="chart-title">Distribuci&#243;n completa de programas acad&#233;micos</div>
+      <div class="chart-wrap xtall"><canvas id="chartProgramas"></canvas></div>
+    </div>
+
+    <!-- Tabla evaluación por evento -->
+    <div class="sec-header"><div class="sec-title">Promedio de evaluaci&#243;n por evento</div></div>
+    <div class="table-wrap" style="margin-bottom:1.6rem">
+      <table class="data-table">
+        <thead><tr><th>Evento</th><th>D&#237;a</th><th>Asistentes</th><th>Cal. general</th><th>Contenido</th><th>Log&#237;stica</th><th>Comp. globales</th></tr></thead>
+        <tbody id="tbodyEvalEv"></tbody>
+      </table>
+    </div>
+
+    <!-- Comentarios -->
+    <div class="sec-header">
+      <div class="sec-title">Comentarios</div>
+      <input type="text" id="searchComentarios" placeholder="Buscar en comentarios..." oninput="filterComentarios()" style="background:#fafaf8;border:1.5px solid var(--border);border-radius:8px;padding:.36rem .72rem;font-family:'Source Sans 3',sans-serif;font-size:.77rem;color:var(--dark);outline:none;width:220px" />
+    </div>
+    <div class="table-wrap" style="padding:1.1rem"><div class="comment-list" id="commentsList"></div></div>
+  </div>
+
+  <!-- ══ EVENTOS ══ -->
+  <div class="tab-panel" id="tab-eventos">
+    <div class="sec-header">
+      <div class="sec-title">Eventos de la semana</div>
+      <div style="display:flex;gap:.6rem;align-items:center">
+        <input type="text" id="searchEventos" placeholder="Buscar evento..." oninput="renderEventos()" style="background:#fafaf8;border:1.5px solid var(--border);border-radius:8px;padding:.36rem .72rem;font-family:'Source Sans 3',sans-serif;font-size:.77rem;color:var(--dark);outline:none;width:200px" />
+        <button class="btn-add" onclick="openEvModal(null)">+ Nuevo evento</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>T&#237;tulo</th><th>D&#237;a</th><th>Hora</th><th>Lugar</th><th>Tipo</th>
+              <th class="center">Inscritos</th>
+              <th class="center">Asistentes</th>
+              <th class="center">Ausentes</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyEventos"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- EVENT MODAL -->
+<div class="modal-overlay" id="evModal">
+  <div class="modal-panel">
+    <div class="modal-head">
+      <h3 id="evModalTitle">Editar evento</h3>
+      <button class="modal-close-btn" onclick="closeEvModal()">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>T&#237;tulo del evento *</label><input type="text" id="evTitulo" placeholder="Nombre completo del evento" /></div>
+      <div class="form-group"><label>Descripci&#243;n</label><textarea id="evDesc" placeholder="Descripci&#243;n breve"></textarea></div>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>D&#237;a *</label>
+          <select id="evDia">
+            <option value="d1">Martes 14 de abril</option>
+            <option value="d2">Mi&#233;rcoles 15 de abril</option>
+            <option value="d3">Jueves 16 de abril</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tipo *</label>
+          <select id="evTipo">
+            <option value="public">P&#250;blico</option><option value="private">Privado</option>
+            <option value="english">English</option><option value="limited">Cupos limitados</option>
+            <option value="bazar">Bazar</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group"><label>Hora inicio (display)</label><input type="text" id="evHiD" placeholder="Ej: 8:00 a.m." /></div>
+        <div class="form-group"><label>Hora fin (display)</label><input type="text" id="evHfD" placeholder="Ej: 10:00 a.m." /></div>
+      </div>
+      <div class="form-section-label">Fechas y horas exactas (para control de botones en la agenda)</div>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>Inicio (UTC) *</label>
+          <input type="datetime-local" id="evHiUTC" />
+          <div class="form-hint">Bogot&#225; = UTC &minus; 5 &nbsp;|&nbsp; Ej: evento 8am BOG = 13:00 UTC</div>
+        </div>
+        <div class="form-group">
+          <label>Fin (UTC) *</label>
+          <input type="datetime-local" id="evHfUTC" />
+          <div class="form-hint">La asistencia abre 30 min antes y cierra 60 min despu&#233;s</div>
+        </div>
+      </div>
+      <div class="form-group"><label>Lugar *</label><input type="text" id="evLugar" placeholder="Ej: Auditorio Fundadores" /></div>
+      <div class="form-group"><label>Facultad / Unidad que organiza</label><input type="text" id="evFacultad" placeholder="Ej: &#193;rea de Relaciones Internacionales" /></div>
+      <div class="form-group"><label>Invitados</label><textarea id="evInvitados" placeholder="Lista de invitados o p&#250;blico objetivo"></textarea></div>
+      <div class="form-section-label">Estado</div>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>Estado *</label>
+          <select id="evEstado">
+            <option value="confirmado">Confirmado</option>
+            <option value="aplazado">Aplazado</option>
+            <option value="cancelado">Cancelado</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Nota visible en agenda</label><input type="text" id="evNota" placeholder="Ej: Nuevo horario por confirmar" /></div>
+      </div>
+      <button class="btn-save" onclick="saveEvento()">Guardar evento</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+var SUPABASE_URL = 'https://glbyimzmpotuzntvgjut.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_tN2lhvrYn7vjOxqJbItKXg__M5sKu8K';
+var db = null;
+
+function initDB() {
+  db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+}
+
+// ── DEMO DATA ─────────────────────────────────────────
+var DEMO_EVENTOS = [
+  { id:'d1e1', titulo:'Inauguraci\u00f3n rinc\u00f3n de T\u00fcrkiye', dia:'d1', lugar:'Biblioteca UEB', hora_inicio_display:'Por definir', hora_fin_display:'', facultad:'\u00c1rea de Relaciones Internacionales', tipo:'public', estado:'confirmado', orden:1, invitados:'Rector, Embajadora de T\u00fcrkiye, TIKA, Maarif', descripcion:'Apertura oficial del espacio dedicado a la cultura turca.', fecha_inicio:'2026-04-14T17:00:00Z', fecha_fin:'2026-04-14T18:00:00Z', nota_estado:'' },
+  { id:'d1e2', titulo:'Inauguraci\u00f3n de la Semana Internacional', dia:'d1', lugar:'Auditorio Fundadores', hora_inicio_display:'Por definir', hora_fin_display:'', facultad:'\u00c1rea de Relaciones Internacionales', tipo:'public', estado:'confirmado', orden:2, invitados:'Rector, Vicerrectores, Embajadora de T\u00fcrkiye', descripcion:'Apertura oficial con palabras de instalaci\u00f3n.', fecha_inicio:'2026-04-14T18:00:00Z', fecha_fin:'2026-04-14T19:00:00Z', nota_estado:'' },
+  { id:'d1e3', titulo:'Conferencia Central: Embajada, TIKA y Maarif', dia:'d1', lugar:'Auditorio Fundadores', hora_inicio_display:'Por definir', hora_fin_display:'', facultad:'\u00c1rea de Relaciones Internacionales', tipo:'public', estado:'confirmado', orden:3, invitados:'Embajadora de T\u00fcrkiye, TIKA, Maarif, Decanos', descripcion:'Conferencia inaugural con representantes de instituciones turcas.', fecha_inicio:'2026-04-14T19:00:00Z', fecha_fin:'2026-04-14T20:30:00Z', nota_estado:'' },
+  { id:'d1e4', titulo:'C\u00f3ctel de inauguraci\u00f3n', dia:'d1', lugar:'Por definir', hora_inicio_display:'Por definir', hora_fin_display:'', facultad:'\u00c1rea de Relaciones Internacionales', tipo:'private', estado:'confirmado', orden:4, invitados:'Rector, Embajadora, TIKA, Maarif, Decanos', descripcion:'Evento social de bienvenida.', fecha_inicio:'2026-04-14T21:00:00Z', fecha_fin:'2026-04-14T23:00:00Z', nota_estado:'' },
+  { id:'d2e1', titulo:'Di\u00e1logos de cooperaci\u00f3n T\u00fcrkiye\u2013Colombia', dia:'d2', lugar:'Auditorio Fundadores', hora_inicio_display:'8:00 a.m.', hora_fin_display:'10:00 a.m.', facultad:'FCEA \u00b7 \u00c1rea de Relaciones Internacionales', tipo:'public', estado:'confirmado', orden:1, invitados:'TIKA, Alcald\u00eda de Bogot\u00e1, Decanos FCEA', descripcion:'Panel de cooperaci\u00f3n bilateral.', fecha_inicio:'2026-04-15T13:00:00Z', fecha_fin:'2026-04-15T15:00:00Z', nota_estado:'' },
+  { id:'d2e2', titulo:'Territories of Coexistence', dia:'d2', lugar:'Auditorio Fundadores', hora_inicio_display:'10:00 a.m.', hora_fin_display:'12:00 p.m.', facultad:'\u00c1rea de Relaciones Internacionales', tipo:'english', estado:'confirmado', orden:2, invitados:'Stan Vandermaas', descripcion:'Conversaci\u00f3n entre Turqu\u00eda, Alemania y Colombia.', fecha_inicio:'2026-04-15T15:00:00Z', fecha_fin:'2026-04-15T17:00:00Z', nota_estado:'' },
+  { id:'d2e3', titulo:'Bazar de T\u00fcrkiye en la UEB', dia:'d2', lugar:'Plazoleta Fundadores', hora_inicio_display:'Toda la jornada', hora_fin_display:'', facultad:'\u00c1rea de Relaciones Internacionales', tipo:'bazar', estado:'confirmado', orden:3, invitados:'Egresados UEB, TIKA', descripcion:'M\u00fasica, danza y emprendimientos.', fecha_inicio:'2026-04-15T13:00:00Z', fecha_fin:'2026-04-15T23:00:00Z', nota_estado:'' },
+  { id:'d2e4', titulo:'Caf\u00e9 y gastronom\u00eda turca', dia:'d2', lugar:'Hall Fundadores', hora_inicio_display:'3:00 p.m.', hora_fin_display:'4:00 p.m.', facultad:'\u00c1rea de Relaciones Internacionales', tipo:'private', estado:'confirmado', orden:4, invitados:'Personal administrativo', descripcion:'Degustaci\u00f3n para personal administrativo.', fecha_inicio:'2026-04-15T20:00:00Z', fecha_fin:'2026-04-15T21:00:00Z', nota_estado:'' },
+  { id:'d3e1', titulo:'Performance circense \u00b7 Becas Maarif \u2014 Sesi\u00f3n 1', dia:'d3', lugar:'Por definir', hora_inicio_display:'8:00 a.m.', hora_fin_display:'10:00 a.m.', facultad:'Facultad de Creaci\u00f3n y Comunicaci\u00f3n', tipo:'public', estado:'confirmado', orden:1, invitados:'Comunidad UEB', descripcion:'Performance circense y charla de becas.', fecha_inicio:'2026-04-16T13:00:00Z', fecha_fin:'2026-04-16T15:00:00Z', nota_estado:'' },
+  { id:'d3e2', titulo:'Performance circense \u00b7 Becas Maarif \u2014 Sesi\u00f3n 2', dia:'d3', lugar:'Auditorio Fundadores', hora_inicio_display:'10:00 a.m.', hora_fin_display:'1:00 p.m.', facultad:'FCC \u00b7 \u00c1rea de Relaciones Internacionales', tipo:'public', estado:'confirmado', orden:2, invitados:'Comunidad UEB, MAARIF', descripcion:'Segunda sesi\u00f3n con conversatorio de becas.', fecha_inicio:'2026-04-16T15:00:00Z', fecha_fin:'2026-04-16T18:00:00Z', nota_estado:'' },
+  { id:'d3e3', titulo:'Encuentro de voleibol', dia:'d3', lugar:'Cancha (por definir)', hora_inicio_display:'12:00 p.m.', hora_fin_display:'', facultad:'Bienestar Universitario', tipo:'public', estado:'confirmado', orden:3, invitados:'Equipo turco, comunidad UEB', descripcion:'Partido amistoso.', fecha_inicio:'2026-04-16T17:00:00Z', fecha_fin:'2026-04-16T19:00:00Z', nota_estado:'' },
+  { id:'d3e4', titulo:'El idioma y la cultura turca \u2014 English Session', dia:'d3', lugar:'Auditorio Fundadores', hora_inicio_display:'2:00 p.m.', hora_fin_display:'4:00 p.m.', facultad:'Centro de Lenguas', tipo:'english', estado:'confirmado', orden:4, invitados:'Comunidad UEB', descripcion:'Sesi\u00f3n en ingl\u00e9s sobre lengua y cultura turca.', fecha_inicio:'2026-04-16T19:00:00Z', fecha_fin:'2026-04-16T21:00:00Z', nota_estado:'' },
+  { id:'d3e5', titulo:'Cine foro + Taller de Artes Maarif', dia:'d3', lugar:'Auditorio Fundadores', hora_inicio_display:'4:00 p.m.', hora_fin_display:'5:00 p.m.', facultad:'FCC \u00b7 Embajada de T\u00fcrkiye', tipo:'limited', estado:'confirmado', orden:5, invitados:'Comunidad UEB (cupos limitados), Gabriel Mej\u00eda', descripcion:'Cine foro y taller art\u00edstico con Maarif.', fecha_inicio:'2026-04-16T21:00:00Z', fecha_fin:'2026-04-16T22:00:00Z', nota_estado:'' }
+];
+
+var DEMO_REGISTROS = [
+  { id:'r01', evento_id:'d1e2', doc_id:'1020304050', nombre:'Ana Garc\u00eda Rodr\u00edguez', unidad_academica:'Facultad de Medicina', tipo_participante:'Estudiante', programa:'Medicina', creser:'No', email:'ana@unbosque.edu.co', created_at:'2026-04-10T14:15:00Z' },
+  { id:'r02', evento_id:'d1e2', doc_id:'1030405060', nombre:'Carlos Mendoza L\u00f3pez', unidad_academica:'Facultad de Ingenier\u00eda', tipo_participante:'Docente', programa:'', creser:'', email:'carlos@unbosque.edu.co', created_at:'2026-04-11T09:42:00Z' },
+  { id:'r03', evento_id:'d2e1', doc_id:'1050607080', nombre:'Laura Jim\u00e9nez Vargas', unidad_academica:'Facultad de Ciencias Econ\u00f3micas y Administrativas', tipo_participante:'Estudiante', programa:'Administraci\u00f3n de Empresas', creser:'S\u00ed', email:'laura@unbosque.edu.co', created_at:'2026-04-09T15:00:00Z' },
+  { id:'r04', evento_id:'d2e1', doc_id:'1060708090', nombre:'Sergio Pardo Ruiz', unidad_academica:'Facultad de Ciencias Econ\u00f3micas y Administrativas', tipo_participante:'Docente', programa:'', creser:'', email:'sergio@unbosque.edu.co', created_at:'2026-04-10T10:10:00Z' },
+  { id:'r05', evento_id:'d2e1', doc_id:'9999999999', nombre:'Pedro Ausente G\u00f3mez', unidad_academica:'Facultad de Derecho', tipo_participante:'Estudiante', programa:'Derecho', creser:'No', email:'pedro@unbosque.edu.co', created_at:'2026-04-12T08:00:00Z' },
+  { id:'r06', evento_id:'d3e5', doc_id:'1111213141', nombre:'Isabel Morales Pe\u00f1a', unidad_academica:'Facultad de Psicolog\u00eda', tipo_participante:'Estudiante', programa:'Psicolog\u00eda', creser:'No', email:'isabel@unbosque.edu.co', created_at:'2026-04-07T11:00:00Z' },
+  { id:'r07', evento_id:'d3e5', doc_id:'1121314151', nombre:'Andr\u00e9s Pe\u00f1a Duarte', unidad_academica:'Facultad de Creaci\u00f3n y Comunicaci\u00f3n', tipo_participante:'Docente', programa:'', creser:'', email:'andres@unbosque.edu.co', created_at:'2026-04-08T15:30:00Z' }
+];
+
+var DEMO_ASISTENCIAS = [
+  { id:'a01', evento_id:'d1e2', doc_id:'1020304050', nombre:'Ana Garc\u00eda Rodr\u00edguez', unidad_academica:'Facultad de Medicina', tipo_participante:'Estudiante', programa:'Medicina', creser:'No', canal_difusion:'Correo institucional', calificacion_general:5, aspecto_contenido:5, aspecto_logistica:4, competencias_globales:5, pais_sugerido:'Jap\u00f3n', comentarios:'Excelente apertura.', walk_in:false, created_at:'2026-04-14T19:10:00Z' },
+  { id:'a02', evento_id:'d1e2', doc_id:'1030405060', nombre:'Carlos Mendoza L\u00f3pez', unidad_academica:'Facultad de Ingenier\u00eda', tipo_participante:'Docente', programa:'', creser:'', canal_difusion:'Docente / Facultad', calificacion_general:4, aspecto_contenido:4, aspecto_logistica:4, competencias_globales:4, pais_sugerido:'Brasil', comentarios:'', walk_in:false, created_at:'2026-04-14T19:15:00Z' },
+  { id:'a03', evento_id:'d1e3', doc_id:'1020304050', nombre:'Ana Garc\u00eda Rodr\u00edguez', unidad_academica:'Facultad de Medicina', tipo_participante:'Estudiante', programa:'Medicina', creser:'No', canal_difusion:'Correo institucional', calificacion_general:5, aspecto_contenido:5, aspecto_logistica:5, competencias_globales:5, pais_sugerido:null, comentarios:'', walk_in:true, created_at:'2026-04-14T20:30:00Z' },
+  { id:'a04', evento_id:'d2e1', doc_id:'1050607080', nombre:'Laura Jim\u00e9nez Vargas', unidad_academica:'Facultad de Ciencias Econ\u00f3micas y Administrativas', tipo_participante:'Estudiante', programa:'Administraci\u00f3n de Empresas', creser:'S\u00ed', canal_difusion:'Redes sociales UEB', calificacion_general:5, aspecto_contenido:5, aspecto_logistica:5, competencias_globales:5, pais_sugerido:'Corea del Sur', comentarios:'Panel muy enriquecedor.', walk_in:false, created_at:'2026-04-15T13:05:00Z' },
+  { id:'a05', evento_id:'d2e1', doc_id:'1060708090', nombre:'Sergio Pardo Ruiz', unidad_academica:'Facultad de Ciencias Econ\u00f3micas y Administrativas', tipo_participante:'Docente', programa:'', creser:'', canal_difusion:'Micrositio RI', calificacion_general:4, aspecto_contenido:4, aspecto_logistica:4, competencias_globales:4, pais_sugerido:null, comentarios:'', walk_in:false, created_at:'2026-04-15T13:18:00Z' },
+  { id:'a06', evento_id:'d2e1', doc_id:'1080910111', nombre:'Felipe Romero Castro', unidad_academica:'Facultad de Ingenier\u00eda', tipo_participante:'Estudiante', programa:'Ingenier\u00eda de Sistemas', creser:'No', canal_difusion:'Redes sociales UEB', calificacion_general:4, aspecto_contenido:4, aspecto_logistica:3, competencias_globales:4, pais_sugerido:'Marruecos', comentarios:'El segundo panel fue largo.', walk_in:true, created_at:'2026-04-15T13:31:00Z' },
+  { id:'a07', evento_id:'d2e1', doc_id:'1070809010', nombre:'Paola Restrepo G\u00f3mez', unidad_academica:'Rector\u00eda / Vicerrector\u00edas', tipo_participante:'Administrativo', programa:'', creser:'', canal_difusion:'Correo institucional', calificacion_general:5, aspecto_contenido:5, aspecto_logistica:5, competencias_globales:3, pais_sugerido:null, comentarios:'', walk_in:true, created_at:'2026-04-15T13:45:00Z' },
+  { id:'a08', evento_id:'d2e2', doc_id:'1091011121', nombre:'Mariana Ospina Le\u00f3n', unidad_academica:'Facultad de Creaci\u00f3n y Comunicaci\u00f3n', tipo_participante:'Docente', programa:'', creser:'', canal_difusion:'Recomendaci\u00f3n de un colega', calificacion_general:5, aspecto_contenido:5, aspecto_logistica:5, competencias_globales:5, pais_sugerido:'Alemania', comentarios:'Inspiradora.', walk_in:true, created_at:'2026-04-15T15:03:00Z' },
+  { id:'a09', evento_id:'d2e2', doc_id:'1101112131', nombre:'David Castillo Ni\u00f1o', unidad_academica:'Facultad de Ciencias', tipo_participante:'Estudiante', programa:'Biolog\u00eda', creser:'S\u00ed', canal_difusion:'Cartelera / pantallas UEB', calificacion_general:4, aspecto_contenido:4, aspecto_logistica:4, competencias_globales:4, pais_sugerido:'Jap\u00f3n', comentarios:'', walk_in:true, created_at:'2026-04-15T15:22:00Z' },
+  { id:'a10', evento_id:'d2e3', doc_id:'1111213141', nombre:'Isabel Morales Pe\u00f1a', unidad_academica:'Facultad de Psicolog\u00eda', tipo_participante:'Estudiante', programa:'Psicolog\u00eda', creser:'No', canal_difusion:'Docente / Facultad', calificacion_general:4, aspecto_contenido:4, aspecto_logistica:3, competencias_globales:4, pais_sugerido:null, comentarios:'Muy din\u00e1mico.', walk_in:true, created_at:'2026-04-15T16:10:00Z' },
+  { id:'a11', evento_id:'d2e3', doc_id:'1121314151', nombre:'Andr\u00e9s Pe\u00f1a Duarte', unidad_academica:'Facultad de Creaci\u00f3n y Comunicaci\u00f3n', tipo_participante:'Docente', programa:'', creser:'', canal_difusion:'Correo institucional', calificacion_general:5, aspecto_contenido:5, aspecto_logistica:4, competencias_globales:5, pais_sugerido:'India', comentarios:'', walk_in:true, created_at:'2026-04-15T16:40:00Z' },
+  { id:'a12', evento_id:'d3e1', doc_id:'1131415161', nombre:'Natalia G\u00f3mez Arce', unidad_academica:'Facultad de Medicina', tipo_participante:'Estudiante', programa:'Enfermer\u00eda', creser:'S\u00ed', canal_difusion:'Redes sociales UEB', calificacion_general:5, aspecto_contenido:5, aspecto_logistica:5, competencias_globales:5, pais_sugerido:'Jap\u00f3n', comentarios:'El performance fue incre\u00edble.', walk_in:true, created_at:'2026-04-16T13:20:00Z' },
+  { id:'a13', evento_id:'d3e2', doc_id:'1141516171', nombre:'Valeria Castro Ruiz', unidad_academica:'Facultad de Ciencias Jur\u00eddicas y Pol\u00edticas', tipo_participante:'Estudiante', programa:'Derecho', creser:'No', canal_difusion:'A trav\u00e9s del programa CreSer', calificacion_general:4, aspecto_contenido:4, aspecto_logistica:4, competencias_globales:4, pais_sugerido:'T\u00fcrkiye (segunda edici\u00f3n)', comentarios:'', walk_in:true, created_at:'2026-04-16T15:10:00Z' },
+  { id:'a14', evento_id:'d3e4', doc_id:'1050607080', nombre:'Laura Jim\u00e9nez Vargas', unidad_academica:'Facultad de Ciencias Econ\u00f3micas y Administrativas', tipo_participante:'Estudiante', programa:'Administraci\u00f3n de Empresas', creser:'S\u00ed', canal_difusion:'Correo institucional', calificacion_general:5, aspecto_contenido:5, aspecto_logistica:4, competencias_globales:5, pais_sugerido:null, comentarios:'Perfecto para practicar ingl\u00e9s.', walk_in:true, created_at:'2026-04-16T19:15:00Z' },
+  { id:'a15', evento_id:'d3e5', doc_id:'1111213141', nombre:'Isabel Morales Pe\u00f1a', unidad_academica:'Facultad de Psicolog\u00eda', tipo_participante:'Estudiante', programa:'Psicolog\u00eda', creser:'No', canal_difusion:'Cartelera / pantallas UEB', calificacion_general:5, aspecto_contenido:5, aspecto_logistica:5, competencias_globales:5, pais_sugerido:null, comentarios:'La pel\u00edcula fue impactante.', walk_in:false, created_at:'2026-04-16T21:05:00Z' },
+  { id:'a16', evento_id:'d3e5', doc_id:'1121314151', nombre:'Andr\u00e9s Pe\u00f1a Duarte', unidad_academica:'Facultad de Creaci\u00f3n y Comunicaci\u00f3n', tipo_participante:'Docente', programa:'', creser:'', canal_difusion:'Correo institucional', calificacion_general:4, aspecto_contenido:4, aspecto_logistica:4, competencias_globales:4, pais_sugerido:null, comentarios:'', walk_in:false, created_at:'2026-04-16T21:08:00Z' }
+];
+
+// ── STATE ─────────────────────────────────────────────
+var eventos      = [];
+var registros    = [];
+var asistencias  = [];
+var currentTab   = 'resumen';
+var editingEvId  = null;
+
+// Pagination
+var PPAGE = 30;
+var asisPage = 1;
+var asisTotalFiltered = 0;
+var asisFiltered = [];
+
+// Eval filter
+var evalEvFilter = 'todos';
+
+var DAY_LABELS = { d1:'Martes 14', d2:'Mi\u00e9rcoles 15', d3:'Jueves 16' };
+var COLORS = ['#c9a84c','#008776','#5b8af0','#b05572','#81BB26','#F08013','#404827','#2a9d8f'];
+var GRID   = { color:'rgba(26,21,64,.07)', drawBorder:false };
+var chartRefs = {};
+
+// ── INIT ─────────────────────────────────────────────
+// ── LOGIN ────────────────────────────────────────────
+var LOGIN_USER = 'ARI';
+var LOGIN_PASS = '1234';
+var SESSION_KEY = 'si_monitor_auth';
+
+function doLogin() {
+  var u = (document.getElementById('loginUser').value || '').trim();
+  var p = (document.getElementById('loginPass').value || '').trim();
+  var errEl = document.getElementById('loginErr');
+  if (u === LOGIN_USER && p === LOGIN_PASS) {
+    sessionStorage.setItem(SESSION_KEY, '1');
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appLayout').style.display   = '';
+    loadAll();
+  } else {
+    errEl.textContent = 'Usuario o contraseña incorrectos.';
+    document.getElementById('loginPass').value = '';
+    document.getElementById('loginPass').focus();
+    setTimeout(function(){ errEl.textContent = ''; }, 2500);
+  }
+}
+
+function checkSession() {
+  if (sessionStorage.getItem(SESSION_KEY) === '1') {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appLayout').style.display   = '';
+    return true;
+  }
+  // Focus user field
+  setTimeout(function(){ var f = document.getElementById('loginUser'); if(f) f.focus(); }, 100);
+  return false;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  initDB();
+  checkSession() && loadAll();
+  document.getElementById('evModal').addEventListener('click', function(e) {
+    if (e.target === this) closeEvModal();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeEvModal();
+  });
+});
+
+function loadAll() {
+  showGlobalLoading(true);
+
+  // Load all three tables in parallel
+  var pEventos     = db.from('eventos').select('*').eq('activo', true).order('dia').order('orden');
+  var pRegistros   = db.from('registros').select('*').order('created_at');
+  var pAsistencias = db.from('asistencias').select('*').order('created_at');
+
+  Promise.all([pEventos, pRegistros, pAsistencias]).then(function(results) {
+    showGlobalLoading(false);
+
+    var rEv = results[0], rReg = results[1], rAsis = results[2];
+
+    if (rEv.error)   { showGlobalError('Error cargando eventos: '     + rEv.error.message);   return; }
+    if (rReg.error)  { showGlobalError('Error cargando registros: '   + rReg.error.message);  return; }
+    if (rAsis.error) { showGlobalError('Error cargando asistencias: ' + rAsis.error.message); return; }
+
+    eventos     = rEv.data   || [];
+    registros   = rReg.data  || [];
+    asistencias = rAsis.data || [];
+
+    // Update demo chip to live indicator
+    var chip = document.querySelector('.demo-chip');
+    if (chip) {
+      chip.textContent = 'Datos en vivo';
+      chip.style.background = 'rgba(0,135,118,.1)';
+      chip.style.borderColor = 'rgba(0,135,118,.25)';
+      chip.style.color = '#006655';
+    }
+
+    renderCurrentTab();
+    subscribeToChanges();
+  }).catch(function(err) {
+    showGlobalLoading(false);
+    showGlobalError('Error de conexión con Supabase.');
+    console.error(err);
+    // Fallback to demo data
+    eventos     = JSON.parse(JSON.stringify(DEMO_EVENTOS));
+    registros   = JSON.parse(JSON.stringify(DEMO_REGISTROS));
+    asistencias = JSON.parse(JSON.stringify(DEMO_ASISTENCIAS));
+    renderCurrentTab();
+  });
+}
+
+function subscribeToChanges() {
+  // Real-time: re-fetch affected table on any change
+  db.channel('monitor-live')
+    .on('postgres_changes', { event:'*', schema:'public', table:'eventos' }, function() {
+      db.from('eventos').select('*').eq('activo', true).order('dia').order('orden').then(function(r) {
+        if (!r.error) { eventos = r.data || []; renderCurrentTab(); }
+      });
+    })
+    .on('postgres_changes', { event:'*', schema:'public', table:'registros' }, function() {
+      db.from('registros').select('*').order('created_at').then(function(r) {
+        if (!r.error) { registros = r.data || []; renderCurrentTab(); }
+      });
+    })
+    .on('postgres_changes', { event:'*', schema:'public', table:'asistencias' }, function() {
+      db.from('asistencias').select('*').order('created_at').then(function(r) {
+        if (!r.error) { asistencias = r.data || []; renderCurrentTab(); }
+      });
+    })
+    .subscribe();
+}
+
+function showGlobalLoading(on) {
+  var el = document.getElementById('globalLoader');
+  if (el) el.style.display = on ? '' : 'none';
+}
+function showGlobalError(msg) {
+  var el = document.getElementById('globalErr');
+  if (el) { el.textContent = msg; el.style.display = ''; }
+}
+
+setInterval(function(){ if(currentTab==='eventos') renderEventos(); }, 60000);
+
+// ── ROUTING ───────────────────────────────────────────
+function showTab(id) {
+  currentTab = id;
+  document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+  var order = ['resumen','asistentes','evaluacion','eventos'];
+  var navItems = document.querySelectorAll('.nav-item');
+  var idx = order.indexOf(id);
+  if (idx >= 0 && navItems[idx]) navItems[idx].classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+  var panel = document.getElementById('tab-' + id);
+  if (panel) panel.classList.add('active');
+  renderCurrentTab();
+}
+
+function renderCurrentTab() {
+  if (currentTab === 'resumen')    renderResumen();
+  if (currentTab === 'asistentes') { populateAsisFilters(); renderAsistentes(); }
+  if (currentTab === 'evaluacion') renderEvaluacion();
+  if (currentTab === 'eventos')    renderEventos();
+}
+
+// ── HELPERS ───────────────────────────────────────────
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function avg(arr) {
+  var v = arr.filter(function(x){ return x > 0; });
+  return v.length ? v.reduce(function(a,b){ return a+b; },0) / v.length : 0;
+}
+function stars(n) {
+  var s = '';
+  for (var i = 1; i <= 5; i++) s += i <= Math.round(n) ? '\u2605' : '\u2606';
+  return s;
+}
+function getEv(id) { return eventos.filter(function(e){ return e.id===id; })[0] || {}; }
+function getEvTitle(id) { var e = getEv(id); return e.titulo || id; }
+function getEvDay(id)   { var e = getEv(id); return DAY_LABELS[e.dia] || ''; }
+
+function makeChart(id, type, data, opts) {
+  var ctx = document.getElementById(id); if (!ctx) return;
+  if (chartRefs[id]) { try{ chartRefs[id].destroy(); }catch(e){} }
+  chartRefs[id] = new Chart(ctx, { type:type, data:data, options:opts });
+}
+
+function isEventPast(ev) {
+  return ev.fecha_fin && new Date(ev.fecha_fin) < new Date();
+}
+
+// ── RESUMEN ───────────────────────────────────────────
+function renderResumen() {
+  var totalAsis  = asistencias.length;
+  var docSet = {};
+  asistencias.forEach(function(a){ docSet[a.doc_id] = (docSet[a.doc_id]||0)+1; });
+  var uniquePeople = Object.keys(docSet).length;
+  var multiEvent   = Object.keys(docSet).filter(function(d){ return docSet[d]>1; }).length;
+
+  var avgCal  = avg(asistencias.map(function(a){ return a.calificacion_general; }));
+  var avgComp = avg(asistencias.map(function(a){ return a.competencias_globales; }));
+
+  var creserCount = asistencias.filter(function(a){ return a.creser==='S\u00ed'; }).length;
+  var creserPct   = totalAsis ? Math.round(creserCount/totalAsis*100) : 0;
+
+  set('kpi-asistencias', totalAsis);
+  set('kpi-personas',    uniquePeople);
+  set('kpi-multi',       multiEvent);
+  set('kpi-cal',         avgCal.toFixed(1));
+  set('kpi-comp',        avgComp.toFixed(1));
+  set('kpi-creser',      creserCount + ' (' + creserPct + '%)');
+  set('kpi-eventos',     eventos.length);
+
+  renderChartAsisByEvent();
+  renderChartByDay();
+  renderChartTipo();
+  renderChartFacultad();
+  renderChartCanal();
+}
+
+function set(id, val) {
+  var el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function renderChartAsisByEvent() {
+  var labels = [], counts = [];
+  eventos.forEach(function(ev) {
+    var n = asistencias.filter(function(a){ return a.evento_id===ev.id; }).length;
+    if (n > 0) { labels.push(ev.titulo.length>26 ? ev.titulo.substring(0,26)+'\u2026' : ev.titulo); counts.push(n); }
+  });
+  makeChart('chartEvento','bar',
+    { labels:labels, datasets:[{ label:'Asistentes', data:counts, backgroundColor:'rgba(201,168,76,.25)', borderColor:'#c9a84c', borderWidth:1.5, borderRadius:5 }] },
+    { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{grid:GRID,ticks:{font:{size:9},maxRotation:35}}, y:{grid:GRID,beginAtZero:true} } }
+  );
+}
+
+function renderChartByDay() {
+  var byDay={d1:0,d2:0,d3:0};
+  asistencias.forEach(function(a){ var e=getEv(a.evento_id); if(e.dia) byDay[e.dia]=(byDay[e.dia]||0)+1; });
+  makeChart('chartDia','bar',
+    { labels:['Martes 14','Mi\u00e9rcoles 15','Jueves 16'],
+      datasets:[{ data:[byDay.d1,byDay.d2,byDay.d3], backgroundColor:['rgba(201,168,76,.3)','rgba(0,135,118,.3)','rgba(91,138,240,.3)'], borderColor:['#c9a84c','#008776','#5b8af0'], borderWidth:1.5, borderRadius:5 }] },
+    { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{grid:GRID}, y:{grid:GRID,beginAtZero:true} } }
+  );
+}
+
+function renderChartTipo() {
+  var byT={};
+  asistencias.forEach(function(a){ var t=a.tipo_participante||'Sin dato'; byT[t]=(byT[t]||0)+1; });
+  var labels=Object.keys(byT);
+  makeChart('chartTipo','doughnut',
+    { labels:labels, datasets:[{ data:labels.map(function(k){return byT[k];}), backgroundColor:COLORS.slice(0,labels.length), borderWidth:0, hoverOffset:5 }] },
+    { responsive:true, maintainAspectRatio:false, cutout:'60%',
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:10,font:{size:10}}}} }
+  );
+}
+
+function renderChartFacultad() {
+  var byF={};
+  asistencias.forEach(function(a){ var f=(a.unidad_academica||'Sin dato'); if(f.length>28)f=f.substring(0,28)+'\u2026'; byF[f]=(byF[f]||0)+1; });
+  var sorted=Object.keys(byF).sort(function(a,b){return byF[b]-byF[a];}).slice(0,8);
+  makeChart('chartFacultad','bar',
+    { labels:sorted, datasets:[{ data:sorted.map(function(k){return byF[k];}), backgroundColor:'rgba(0,135,118,.2)', borderColor:'#008776', borderWidth:1.5, borderRadius:4 }] },
+    { indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{grid:GRID,beginAtZero:true}, y:{grid:{display:false},ticks:{font:{size:9}}} } }
+  );
+}
+
+function renderChartCanal() {
+  var byC={};
+  asistencias.forEach(function(a){ if(a.canal_difusion) byC[a.canal_difusion]=(byC[a.canal_difusion]||0)+1; });
+  var labels=Object.keys(byC).sort(function(a,b){return byC[b]-byC[a];});
+  makeChart('chartCanal','doughnut',
+    { labels:labels, datasets:[{ data:labels.map(function(k){return byC[k];}), backgroundColor:COLORS, borderWidth:0, hoverOffset:5 }] },
+    { responsive:true, maintainAspectRatio:false, cutout:'58%',
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:8,font:{size:9}}}} }
+  );
+}
+
+// ── ASISTENTES (merged view) ──────────────────────────
+function populateAsisFilters() {
+  var sel = document.getElementById('filterEvento');
+  if (!sel || sel.options.length > 1) return;
+  eventos.forEach(function(ev) {
+    var opt = document.createElement('option');
+    opt.value = ev.id;
+    opt.textContent = DAY_LABELS[ev.dia] + ' \u00b7 ' + ev.titulo;
+    sel.appendChild(opt);
+  });
+  // Populate facultad filter
+  var facs = {};
+  asistencias.forEach(function(a){ if(a.unidad_academica) facs[a.unidad_academica]=1; });
+  registros.forEach(function(r){ if(r.unidad_academica) facs[r.unidad_academica]=1; });
+  var selF = document.getElementById('filterFacultad');
+  if (selF) {
+    Object.keys(facs).sort().forEach(function(f) {
+      var o = document.createElement('option'); o.value = f; o.textContent = f; selF.appendChild(o);
+    });
+  }
+}
+
+// Build merged row list: asistencias + registros sin asistencia
+function buildMergedRows() {
+  var rows = [];
+
+  // All asistencias
+  asistencias.forEach(function(a) {
+    var ev = getEv(a.evento_id);
+    rows.push({
+      tipo_fila:   'asistio',
+      evento_id:   a.evento_id,
+      dia:         ev.dia || '',
+      evento_titulo: ev.titulo || '',
+      doc_id:      a.doc_id,
+      nombre:      a.nombre,
+      tipo_participante: a.tipo_participante,
+      unidad_academica:  a.unidad_academica,
+      programa:    a.programa,
+      creser:      a.creser,
+      cal:         a.calificacion_general,
+      comp:        a.competencias_globales,
+      ts:          a.created_at,
+      walk_in:     a.walk_in
+    });
+  });
+
+  // Registros sin asistencia (ausentes)
+  var asisKeys = {};
+  asistencias.forEach(function(a){ asisKeys[a.evento_id+'_'+a.doc_id] = true; });
+
+  registros.forEach(function(r) {
+    var key = r.evento_id+'_'+r.doc_id;
+    if (!asisKeys[key]) {
+      var ev = getEv(r.evento_id);
+      rows.push({
+        tipo_fila:   'ausente',
+        evento_id:   r.evento_id,
+        dia:         ev.dia || '',
+        evento_titulo: ev.titulo || '',
+        doc_id:      r.doc_id,
+        nombre:      r.nombre,
+        tipo_participante: r.tipo_participante,
+        unidad_academica:  r.unidad_academica,
+        programa:    r.programa,
+        creser:      r.creser,
+        cal:         null,
+        comp:        null,
+        ts:          r.created_at,
+        walk_in:     false
+      });
+    }
+  });
+
+  return rows;
+}
+
+function renderAsistentes() {
+  var evId     = (document.getElementById('filterEvento')    || {}).value || 'todos';
+  var dia      = (document.getElementById('filterDia')       || {}).value || 'todos';
+  var tipo     = (document.getElementById('filterTipo')      || {}).value || 'todos';
+  var facVal   = (document.getElementById('filterFacultad')  || {}).value || 'todos';
+  var creserV  = (document.getElementById('filterCreser')    || {}).value || 'todos';
+  var estado   = (document.getElementById('filterEstado')    || {}).value || 'todos';
+  var search   = ((document.getElementById('searchAsis')     || {}).value || '').trim().toLowerCase();
+
+  var merged = buildMergedRows();
+
+  asisFiltered = merged.filter(function(r) {
+    if (evId    !== 'todos' && r.evento_id !== evId)            return false;
+    if (dia     !== 'todos' && r.dia       !== dia)             return false;
+    if (tipo    !== 'todos' && r.tipo_participante !== tipo)    return false;
+    if (facVal  !== 'todos' && r.unidad_academica  !== facVal)  return false;
+    if (creserV !== 'todos' && r.creser !== creserV)            return false;
+    if (estado  === 'asistio'  && r.tipo_fila !== 'asistio')   return false;
+    if (estado  === 'ausente'  && r.tipo_fila !== 'ausente')   return false;
+    if (search) {
+      var hay = (r.nombre+r.doc_id+(r.unidad_academica||'')+(r.programa||'')).toLowerCase();
+      if (hay.indexOf(search) < 0) return false;
+    }
+    return true;
+  });
+
+  asisTotalFiltered = asisFiltered.length;
+  set('countAsis', asisTotalFiltered + ' registros');
+
+  // Pagination controls
+  var totalPages = Math.max(1, Math.ceil(asisTotalFiltered / PPAGE));
+  if (asisPage > totalPages) asisPage = 1;
+  set('asisPageInfo', 'P\u00e1gina ' + asisPage + ' de ' + totalPages);
+  var prevBtn = document.getElementById('asisPrev');
+  var nextBtn = document.getElementById('asisNext');
+  if (prevBtn) prevBtn.disabled = (asisPage <= 1);
+  if (nextBtn) nextBtn.disabled = (asisPage >= totalPages);
+
+  var start = (asisPage - 1) * PPAGE;
+  var page  = asisFiltered.slice(start, start + PPAGE);
+
+  var h = '';
+  page.forEach(function(r) {
+    var stateChip = r.tipo_fila === 'asistio'
+      ? '<span class="chip-state chip-asistio">Asisti\u00f3</span>'
+      : '<span class="chip-state chip-ausente">Inscrito \u2013 No asisti\u00f3</span>';
+    var cal  = r.cal  ? r.cal  + ' \u2605' : '\u2014';
+    var comp = r.comp ? r.comp            : '\u2014';
+    var ts   = (r.ts||'').replace('T',' ').substring(0,16);
+    h += '<tr>';
+    h += '<td>' + stateChip + '</td>';
+    h += '<td>' + esc(r.nombre) + '</td>';
+    h += '<td class="mono small">' + esc(r.doc_id) + '</td>';
+    h += '<td class="small">' + esc(getEvDay(r.evento_id)) + '</td>';
+    h += '<td class="small ev-cell">' + esc(getEvTitle(r.evento_id)) + '</td>';
+    h += '<td><span class="chip-tipo">' + esc(r.tipo_participante||'') + '</span></td>';
+    h += '<td class="small">' + esc(r.unidad_academica||'') + '</td>';
+    h += '<td class="small">' + esc(r.programa||'\u2014') + '</td>';
+    h += '<td class="center">' + esc(r.creser||'\u2014') + '</td>';
+    h += '<td class="center">' + cal + '</td>';
+    h += '<td class="center">' + comp + '</td>';
+    h += '<td class="mono small">' + ts + '</td>';
+    h += '</tr>';
+  });
+  var tbody = document.getElementById('tbodyAsis');
+  if (tbody) tbody.innerHTML = h || '<tr><td colspan="12" style="text-align:center;color:#aaa;padding:2rem">Sin resultados</td></tr>';
+}
+
+function asisChangePage(dir) {
+  asisPage += dir;
+  renderAsistentes();
+}
+
+// ── EVALUACIÓN ────────────────────────────────────────
+function renderEvaluacion() {
+  // Populate eval event filter
+  var sel = document.getElementById('filterEvalEvento');
+  if (sel && sel.options.length <= 1) {
+    eventos.forEach(function(ev) {
+      var opt = document.createElement('option'); opt.value = ev.id;
+      opt.textContent = DAY_LABELS[ev.dia]+' \u00b7 '+ev.titulo; sel.appendChild(opt);
+    });
+  }
+
+  var evId = evalEvFilter;
+  var subset = evId === 'todos' ? asistencias : asistencias.filter(function(a){ return a.evento_id === evId; });
+  var total  = subset.length;
+
+  var starDist = [0,0,0,0,0];
+  subset.forEach(function(a){ if(a.calificacion_general>=1&&a.calificacion_general<=5) starDist[a.calificacion_general-1]++; });
+
+  var avgCal  = avg(subset.map(function(a){ return a.calificacion_general; }));
+  var avgCont = avg(subset.map(function(a){ return a.aspecto_contenido; }));
+  var avgLog  = avg(subset.map(function(a){ return a.aspecto_logistica; }));
+  var avgComp = avg(subset.map(function(a){ return a.competencias_globales; }));
+
+  set('evalAvgCal',  avgCal.toFixed(1));
+  set('evalStars',   stars(avgCal));
+  set('evalAvgCont', avgCont.toFixed(1));
+  set('evalAvgLog',  avgLog.toFixed(1));
+  set('evalAvgComp', avgComp.toFixed(1));
+  set('evalTotal',   total);
+
+  for (var s = 5; s >= 1; s--) {
+    var pct = total > 0 ? Math.round(starDist[s-1]/total*100) : 0;
+    var bEl = document.getElementById('bar-star-'+s);
+    var pEl = document.getElementById('pct-star-'+s);
+    if (bEl) bEl.style.width = pct+'%';
+    if (pEl) pEl.textContent = pct+'%';
+  }
+
+  // Per-event table
+  var evStats = {};
+  asistencias.forEach(function(a) {
+    if (!evStats[a.evento_id]) evStats[a.evento_id]={cal:[],cont:[],log:[],comp:[],n:0};
+    evStats[a.evento_id].cal.push(a.calificacion_general);
+    evStats[a.evento_id].cont.push(a.aspecto_contenido);
+    evStats[a.evento_id].log.push(a.aspecto_logistica);
+    evStats[a.evento_id].comp.push(a.competencias_globales);
+    evStats[a.evento_id].n++;
+  });
+  var evH = '';
+  Object.keys(evStats).forEach(function(id) {
+    var st=evStats[id]; var ev=getEv(id);
+    var c=avg(st.cal),co=avg(st.cont),l=avg(st.log),cp=avg(st.comp);
+    evH += '<tr>';
+    evH += '<td class="small ev-cell">'+esc(ev.titulo||id)+'</td>';
+    evH += '<td class="small">'+esc(DAY_LABELS[ev.dia]||'')+'</td>';
+    evH += '<td class="center">'+st.n+'</td>';
+    evH += '<td class="center stars-cell">'+c.toFixed(1)+' <span class="inline-stars">'+stars(c)+'</span></td>';
+    evH += '<td class="center">'+co.toFixed(1)+'</td>';
+    evH += '<td class="center">'+l.toFixed(1)+'</td>';
+    evH += '<td class="center" style="color:#008776;font-weight:700">'+cp.toFixed(1)+'</td>';
+    evH += '</tr>';
+  });
+  var tbEv = document.getElementById('tbodyEvalEv');
+  if (tbEv) tbEv.innerHTML = evH || '<tr><td colspan="7" style="text-align:center;color:#aaa;padding:1.5rem">Sin datos</td></tr>';
+
+  // Canal chart (filtered)
+  var byC={};
+  subset.forEach(function(a){ if(a.canal_difusion) byC[a.canal_difusion]=(byC[a.canal_difusion]||0)+1; });
+  var cLabels=Object.keys(byC).sort(function(a,b){return byC[b]-byC[a];});
+  makeChart('chartCanalEval','bar',
+    { labels:cLabels, datasets:[{ data:cLabels.map(function(k){return byC[k];}), backgroundColor:'rgba(201,168,76,.25)', borderColor:'#c9a84c', borderWidth:1.5, borderRadius:4 }] },
+    { indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{grid:GRID,beginAtZero:true}, y:{grid:{display:false},ticks:{font:{size:9}}} } }
+  );
+
+  // Países
+  var paises={};
+  subset.forEach(function(a){ if(a.pais_sugerido) paises[a.pais_sugerido]=(paises[a.pais_sugerido]||0)+1; });
+  var pList=Object.keys(paises).sort(function(a,b){return paises[b]-paises[a];});
+  var maxP=pList.length?paises[pList[0]]:1;
+  var pH='';
+  pList.forEach(function(p,i){
+    var pct=Math.round(paises[p]/maxP*100);
+    pH+='<div class="pais-row"><span class="pais-rank">'+(i+1)+'</span><span class="pais-name">'+esc(p)+'</span><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%"></div></div><span class="pais-count">'+paises[p]+'</span></div>';
+  });
+  var pEl=document.getElementById('paisesList');
+  if(pEl) pEl.innerHTML=pH||'<p class="empty-note">Sin sugerencias a\u00fan.</p>';
+
+  // Programas
+  var byProg={};
+  subset.forEach(function(a){ if(a.programa) byProg[a.programa]=(byProg[a.programa]||0)+1; });
+  var pSorted=Object.keys(byProg).sort(function(a,b){return byProg[b]-byProg[a];});
+  var topH='';
+  pSorted.slice(0,5).forEach(function(p,i){
+    topH+='<div class="prog-chip"><span class="prog-rank">'+(i+1)+'</span><span class="prog-name">'+esc(p)+'</span><span class="prog-count">'+byProg[p]+'</span></div>';
+  });
+  var tpEl=document.getElementById('topProgList'); if(tpEl) tpEl.innerHTML=topH;
+  makeChart('chartProgramas','bar',
+    { labels:pSorted, datasets:[{ data:pSorted.map(function(k){return byProg[k];}), backgroundColor:'rgba(0,135,118,.2)', borderColor:'#008776', borderWidth:1.5, borderRadius:4 }] },
+    { indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{grid:GRID,beginAtZero:true}, y:{grid:{display:false},ticks:{font:{size:9}}} } }
+  );
+
+  // Tipo por evento chart
+  renderChartTipoByEvento();
+
+  // CreSer por evento
+  renderChartCreserByEvento();
+
+  // Comentarios (filtered)
+  var comSearch = ((document.getElementById('searchComentarios')||{}).value||'').trim().toLowerCase();
+  var comments  = subset.filter(function(a){ return a.comentarios; });
+  if (comSearch) comments = comments.filter(function(a){ return a.comentarios.toLowerCase().indexOf(comSearch)>=0 || (a.nombre||'').toLowerCase().indexOf(comSearch)>=0; });
+  var comH='';
+  comments.forEach(function(a){
+    comH+='<div class="comment-item">';
+    comH+='<div class="comment-meta"><span class="cm-ev">'+esc(getEvTitle(a.evento_id))+'</span>';
+    comH+='<span>'+esc(getEvDay(a.evento_id))+'</span>';
+    comH+='<span>'+esc(a.tipo_participante||'')+' \u00b7 '+esc(a.unidad_academica||'')+'</span></div>';
+    comH+='<div class="comment-text">\u201c'+esc(a.comentarios)+'\u201d</div>';
+    comH+='</div>';
+  });
+  var cEl=document.getElementById('commentsList');
+  if(cEl) cEl.innerHTML=comH||'<p class="empty-note">Sin comentarios registrados.</p>';
+}
+
+function filterEval() {
+  var sel = document.getElementById('filterEvalEvento');
+  evalEvFilter = sel ? sel.value : 'todos';
+  renderEvaluacion();
+}
+
+function filterComentarios() { renderEvaluacion(); }
+
+function renderChartTipoByEvento() {
+  var evIds = [], evTitles = [], datasets = {};
+  var tipos = ['Estudiante','Docente','Administrativo','P\u00fablico externo'];
+  tipos.forEach(function(t){ datasets[t]=[]; });
+  asistencias.forEach(function(a){
+    if(evIds.indexOf(a.evento_id)<0){ evIds.push(a.evento_id); evTitles.push(getEvTitle(a.evento_id).substring(0,22)+'\u2026'); }
+  });
+  evIds.forEach(function(id){
+    var sub=asistencias.filter(function(a){ return a.evento_id===id; });
+    tipos.forEach(function(t){ datasets[t].push(sub.filter(function(a){ return a.tipo_participante===t; }).length); });
+  });
+  var ds=tipos.map(function(t,i){ return { label:t, data:datasets[t], backgroundColor:COLORS[i], borderWidth:0, borderRadius:3 }; });
+  makeChart('chartTipoEvento','bar',
+    { labels:evTitles, datasets:ds },
+    { responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ position:'bottom', labels:{ boxWidth:10, padding:10, font:{size:9} } } },
+      scales:{ x:{stacked:true,grid:GRID,ticks:{font:{size:8}}}, y:{stacked:true,grid:GRID,beginAtZero:true} } }
+  );
+}
+
+function renderChartCreserByEvento() {
+  var creserTotal = asistencias.filter(function(a){ return a.creser==='S\u00ed'; }).length;
+  var total = asistencias.length;
+  var pct = total>0 ? Math.round(creserTotal/total*100) : 0;
+  makeChart('chartCreser','doughnut',
+    { labels:['CreSer','Otros'],
+      datasets:[{ data:[creserTotal, total-creserTotal], backgroundColor:['#81BB26','rgba(26,21,64,.1)'], borderWidth:0 }] },
+    { responsive:true, maintainAspectRatio:false, cutout:'65%',
+      plugins:{ legend:{display:false},
+        tooltip:{ callbacks:{ label:function(ctx){ return ctx.label+': '+ctx.parsed+' ('+Math.round(ctx.parsed/total*100)+'%)'; } } } } }
+  );
+  set('creserPctLabel', creserTotal+' asistentes CreSer ('+pct+'%)');
+}
+
+// ── EVENTOS ───────────────────────────────────────────
+function getEvPhase(ev) {
+  if (!ev.fecha_inicio || !ev.fecha_fin) return 'nodate';
+  var now   = new Date();
+  var start = new Date(ev.fecha_inicio);
+  var end_  = new Date(ev.fecha_fin);
+  var early = 30 * 60 * 1000;
+  var grace = 60 * 60 * 1000;
+  if (now < new Date(start.getTime() - early)) return 'upcoming';
+  if (now.getTime() <= end_.getTime()) return 'live';
+  if (now.getTime() <= end_.getTime() + grace) return 'grace';
+  return 'past';
+}
+
+function renderEventos() {
+  var search = ((document.getElementById('searchEventos')||{}).value||'').trim().toLowerCase();
+  var evList = search
+    ? eventos.filter(function(ev){ return (ev.titulo+(ev.lugar||'')).toLowerCase().indexOf(search)>=0; })
+    : eventos;
+
+  var h = '';
+  evList.forEach(function(ev) {
+    var nAsis = asistencias.filter(function(a){ return a.evento_id===ev.id; }).length;
+    var nReg  = registros.filter(function(r){ return r.evento_id===ev.id; }).length;
+    var asisDocSet = {};
+    asistencias.filter(function(a){ return a.evento_id===ev.id; }).forEach(function(a){ asisDocSet[a.doc_id]=true; });
+    var nAus = registros.filter(function(r){ return r.evento_id===ev.id && !asisDocSet[r.doc_id]; }).length;
+
+    var phase = getEvPhase(ev);
+    var tipo  = { public:'P\u00fablico', private:'Privado', english:'English', limited:'Limitado', bazar:'Bazar' }[ev.tipo]||ev.tipo;
+
+    var estChip = ev.estado==='confirmado'
+      ? '<span class="chip-ev chip-conf">Confirmado</span>'
+      : ev.estado==='aplazado'
+        ? '<span class="chip-ev chip-aplaz">Aplazado</span>'
+        : '<span class="chip-ev chip-cancel">Cancelado</span>';
+
+    var phaseChip = '';
+    if (phase==='upcoming') phaseChip = '<span class="chip-ev chip-upcoming">Pr\u00f3ximo</span>';
+    if (phase==='live')     phaseChip = '<span class="chip-ev chip-live">&#9679; En vivo</span>';
+    if (phase==='grace')    phaseChip = '<span class="chip-ev chip-grace">Cerrando</span>';
+    if (phase==='past')     phaseChip = '<span class="chip-ev chip-past">Finalizado</span>';
+    if (phase==='nodate')   phaseChip = '<span class="chip-ev chip-nodate">Sin horario</span>';
+
+    var cellReg, cellAsis, cellAus;
+    if (phase==='upcoming' || phase==='nodate') {
+      cellReg  = '<td class="center ev-count-reg">' + nReg + '</td>';
+      cellAsis = '<td class="center ev-count-dim">\u2014</td>';
+      cellAus  = '<td class="center ev-count-dim">\u2014</td>';
+    } else if (phase==='live' || phase==='grace') {
+      cellReg  = '<td class="center ev-count-reg">' + nReg + '</td>';
+      cellAsis = '<td class="center ev-count-asis">' + nAsis + ' <span class="live-pulse">&#9679;</span></td>';
+      cellAus  = '<td class="center ev-count-dim">\u2014</td>';
+    } else {
+      cellReg  = '<td class="center ev-count-reg">'  + nReg + '</td>';
+      cellAsis = '<td class="center ev-count-asis">'  + nAsis + '</td>';
+      cellAus  = nAus > 0
+        ? '<td class="center ev-count-aus">' + nAus + '</td>'
+        : '<td class="center ev-count-dim">0</td>';
+    }
+
+    var rowCls = (phase==='live') ? ' class="row-live"' : (phase==='past' ? ' class="row-past"' : '');
+    h += '<tr' + rowCls + '>';
+    h += '<td class="ev-cell small">'+esc(ev.titulo)+'</td>';
+    h += '<td class="small">'+esc(DAY_LABELS[ev.dia]||'')+'</td>';
+    h += '<td class="mono small">'+esc(ev.hora_inicio_display)+(ev.hora_fin_display?' \u2013 '+ev.hora_fin_display:'')+'</td>';
+    h += '<td class="small">'+esc(ev.lugar)+'</td>';
+    h += '<td><span class="chip-tipo">'+tipo+'</span></td>';
+    h += cellReg + cellAsis + cellAus;
+    h += '<td>'+estChip+' '+phaseChip+'</td>';
+    h += '<td><div class="action-btns">';
+    h += '<button class="btn-sm" onclick="openEvModal(\'' + ev.id + '\')">Editar</button>';
+    if (ev.estado==='confirmado') {
+      h += '<button class="btn-sm btn-warn" onclick="changeState(\'' + ev.id + '\',\'aplazado\')">Aplazar</button>';
+      h += '<button class="btn-sm btn-danger" onclick="changeState(\'' + ev.id + '\',\'cancelado\')">Cancelar</button>';
+    } else {
+      h += '<button class="btn-sm btn-ok" onclick="changeState(\'' + ev.id + '\',\'confirmado\')">Reactivar</button>';
+    }
+    h += '<button class="btn-sm btn-csv" onclick="exportEventCSV(\'' + ev.id + '\')">CSV</button>';
+    h += '</div></td>';
+    h += '</tr>';
+  });
+  var tb = document.getElementById('tbodyEventos');
+  if (tb) tb.innerHTML = h || '<tr><td colspan="10" style="text-align:center;color:#aaa;padding:2rem">Sin resultados</td></tr>';
+}
+
+function changeState(id, newState) {
+  var ev = eventos.filter(function(e){ return e.id===id; })[0]; if(!ev) return;
+  var labels = { aplazado:'aplazar', cancelado:'cancelar', confirmado:'reactivar' };
+  if (!confirm('\u00bfSeguro que deseas '+labels[newState]+' el evento "'+ev.titulo+'"?')) return;
+  ev.estado = newState;
+  renderEventos();
+  db.from('eventos').update({ estado: newState }).eq('id', id).then(function(r) {
+    if (r.error) showToast('Error al cambiar estado: ' + r.error.message);
+  });
+}
+
+// ── EVENT MODAL ───────────────────────────────────────
+function openEvModal(id) {
+  editingEvId = id || null;
+  var ev = id ? (eventos.filter(function(e){ return e.id===id; })[0]||{}) : {};
+  set('evModalTitle', id ? 'Editar evento' : 'Nuevo evento');
+  setVal('evTitulo',      ev.titulo||'');
+  setVal('evDesc',        ev.descripcion||'');
+  setVal('evDia',         ev.dia||'d1');
+  setVal('evTipo',        ev.tipo||'public');
+  setVal('evHiD',         ev.hora_inicio_display||'');
+  setVal('evHfD',         ev.hora_fin_display||'');
+  function utcToBoHHMM(isoStr) {
+    if (!isoStr) return '';
+    var d = new Date(isoStr);
+    var h = d.getUTCHours() - 5;
+    if (h < 0) h += 24;
+    var mm = d.getUTCMinutes();
+    return (h < 10 ? '0' : '') + h + ':' + (mm < 10 ? '0' : '') + mm;
+  }
+  setVal('evHiUTC', utcToBoHHMM(ev.fecha_inicio));
+  setVal('evHfUTC', utcToBoHHMM(ev.fecha_fin));
+  setVal('evLugar',       ev.lugar||'');
+  setVal('evFacultad',    ev.facultad||'');
+  setVal('evInvitados',   ev.invitados||'');
+  setVal('evEstado',      ev.estado||'confirmado');
+  setVal('evNota',        ev.nota_estado||'');
+  document.getElementById('evModal').classList.add('open');
+  setTimeout(function(){ var f=document.getElementById('evTitulo'); if(f) f.focus(); }, 250);
+}
+
+function closeEvModal() {
+  document.getElementById('evModal').classList.remove('open');
+  editingEvId = null;
+}
+
+function setVal(id, val) {
+  var el = document.getElementById(id);
+  if (el) el.value = val;
+}
+function getVal(id) {
+  var el = document.getElementById(id);
+  return el ? el.value : '';
+}
+
+function bogToUTC(dia, hhmm) {
+  if (!hhmm) return null;
+  var dateMap = { d1:'2026-04-14', d2:'2026-04-15', d3:'2026-04-16' };
+  var date = dateMap[dia] || '2026-04-14';
+  var parts = hhmm.split(':');
+  var hh = parseInt(parts[0], 10) + 5;
+  var mm = parseInt(parts[1], 10);
+  var d  = new Date(date + 'T00:00:00Z');
+  d.setUTCHours(hh, mm, 0, 0);
+  return d.toISOString();
+}
+
+function saveEvento() {
+  var titulo = getVal('evTitulo').trim();
+  if (!titulo) { alert('El t\u00edtulo es obligatorio.'); return; }
+  var data = {
+    titulo:              titulo,
+    descripcion:         getVal('evDesc').trim(),
+    dia:                 getVal('evDia'),
+    tipo:                getVal('evTipo'),
+    hora_inicio_display: getVal('evHiD').trim(),
+    hora_fin_display:    getVal('evHfD').trim(),
+    fecha_inicio:        bogToUTC(getVal('evDia'), getVal('evHiUTC')),
+    fecha_fin:           bogToUTC(getVal('evDia'), getVal('evHfUTC')),
+    lugar:               getVal('evLugar').trim(),
+    facultad:            getVal('evFacultad').trim(),
+    invitados:           getVal('evInvitados').trim(),
+    estado:              getVal('evEstado'),
+    nota_estado:         getVal('evNota').trim()
+  };
+  if (editingEvId) {
+    eventos = eventos.map(function(e){ return e.id===editingEvId ? Object.assign({},e,data) : e; });
+    db.from('eventos').update(data).eq('id', editingEvId).then(function(r) {
+      if (r.error) showToast('Error al guardar: ' + r.error.message);
+    });
+  } else {
+    data.id = 'ev_'+Date.now(); data.orden = eventos.length+1; eventos.push(data);
+    db.from('eventos').insert(data).then(function(r) {
+      if (r.error) showToast('Error al crear evento: ' + r.error.message);
+    });
+  }
+  closeEvModal();
+  renderEventos();
+  showToast('Evento guardado correctamente.');
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2800);
+}
+
+// ── CSV EXPORTS ───────────────────────────────────────
+function csvRow(arr) {
+  return arr.map(function(v){ return '"'+String(v||'').replace(/"/g,'""')+'"'; }).join(',')+'\n';
+}
+
+var CSV_COLS = ['Estado','Evento','D\u00eda','Nombre','N\u00fam. documento','Tipo participante','Unidad acad\u00e9mica','Programa','CreSer','Canal difusi\u00f3n','Calificaci\u00f3n general','Contenido y ponentes','Organizaci\u00f3n y log\u00edstica','Competencias globales','Pa\u00eds sugerido','Comentarios','Fecha y hora'];
+
+function buildCSVRows(rows) {
+  return rows.map(function(r) {
+    var ev = getEv(r.evento_id||'');
+    var ts = (r.created_at||r.ts||'').replace('T',' ').substring(0,16);
+    var estado = r.tipo_fila ? (r.tipo_fila==='asistio'?'Asisti\u00f3':'Inscrito \u2013 No asisti\u00f3') : (r.walk_in?'Asisti\u00f3 (sin registro)':'Asisti\u00f3');
+    return [
+      estado,
+      ev.titulo||r.evento_id||'',
+      DAY_LABELS[ev.dia]||'',
+      r.nombre||'',
+      r.doc_id||'',
+      r.tipo_participante||'',
+      r.unidad_academica||'',
+      r.programa||'',
+      r.creser||'',
+      r.canal_difusion||'',
+      r.cal||r.calificacion_general||'',
+      r.aspecto_contenido||'',
+      r.aspecto_logistica||'',
+      r.comp||r.competencias_globales||'',
+      r.pais_sugerido||'',
+      r.comentarios||'',
+      ts
+    ];
+  });
+}
+
+function exportCSV() {
+  var merged = buildMergedRows();
+  var csv = '\uFEFF'+csvRow(CSV_COLS)+buildCSVRows(merged).map(csvRow).join('');
+  downloadCSV(csv, 'SI_Turkiye_2026_informe_completo.csv');
+}
+
+function exportEventCSV(evId) {
+  var evAsis = asistencias.filter(function(a){ return a.evento_id===evId; });
+  var asisDocSet = {}; evAsis.forEach(function(a){ asisDocSet[a.doc_id]=true; });
+  var evRegs = registros.filter(function(r){ return r.evento_id===evId && !asisDocSet[r.doc_id]; });
+
+  var rows = evAsis.map(function(a){
+    return { tipo_fila:'asistio', evento_id:a.evento_id, doc_id:a.doc_id, nombre:a.nombre,
+      tipo_participante:a.tipo_participante, unidad_academica:a.unidad_academica,
+      programa:a.programa, creser:a.creser, canal_difusion:a.canal_difusion,
+      cal:a.calificacion_general, aspecto_contenido:a.aspecto_contenido,
+      aspecto_logistica:a.aspecto_logistica, comp:a.competencias_globales,
+      pais_sugerido:a.pais_sugerido, comentarios:a.comentarios, created_at:a.created_at };
+  }).concat(evRegs.map(function(r){
+    return { tipo_fila:'ausente', evento_id:r.evento_id, doc_id:r.doc_id, nombre:r.nombre,
+      tipo_participante:r.tipo_participante, unidad_academica:r.unidad_academica,
+      programa:r.programa, creser:r.creser, canal_difusion:'', cal:'', aspecto_contenido:'',
+      aspecto_logistica:'', comp:'', pais_sugerido:'', comentarios:'', created_at:r.created_at };
+  }));
+
+  var ev  = getEv(evId);
+  var csv = '\uFEFF'+csvRow(CSV_COLS)+buildCSVRows(rows).map(csvRow).join('');
+  downloadCSV(csv, 'SI_Turkiye_'+evId+'_'+ev.titulo.substring(0,20).replace(/\s/g,'_')+'.csv');
+}
+
+function exportCurrentFilterCSV() {
+  var csv = '\uFEFF'+csvRow(CSV_COLS)+buildCSVRows(asisFiltered).map(csvRow).join('');
+  downloadCSV(csv, 'SI_Turkiye_filtrado.csv');
+}
+
+function downloadCSV(csv, filename) {
+  var blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+</script>
+</div><!-- /appLayout -->
+</body>
+</html>
